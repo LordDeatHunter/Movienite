@@ -12,17 +12,18 @@ body {
   color: #333;
 }
 
-/* Adjust the grid layout to center cards and make them wider */
-#movie-list {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(300px, 1fr)
-  ); /* Increased min-width for wider cards */
+.movie-list {
+  /*display: grid;*/
+  /*grid-template-columns: repeat(*/
+  /*  auto-fill,*/
+  /*  minmax(300px, 1fr)*/
+  /*); !* Increased min-width for wider cards *!*/
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   padding: 20px;
-  max-width: 1200px; /* Constrain the grid to a maximum width */
-  margin: 0 auto; /* Center the grid container horizontally */
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .movie-card {
@@ -33,11 +34,6 @@ body {
   transition:
     transform 0.2s,
     box-shadow 0.2s;
-}
-
-.movie-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .movie-card h3 {
@@ -117,4 +113,96 @@ h1 {
   font-size: 1.5rem;
   color: #333;
   margin-bottom: 10px;
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Adjusted styles for the add movie button text */
+.add-movie-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 80px; /* Increased size for better visibility */
+  height: 80px; /* Increased size for better visibility */
+  font-size: 1rem; /* Adjusted font size */
+  font-weight: bold; /* Made text bold */
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.add-movie-button:hover {
+  background-color: #0056b3;
+}
+
+/* Styled the text input field */
+#movie-url {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+#movie-url:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
 }

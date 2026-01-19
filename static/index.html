@@ -27,6 +27,18 @@
         <h2>Upcoming</h2>
         <div id="upcoming-list" class="movie-list"></div>
       </section>
+      <button id="add-movie-button" class="add-movie-button">Add Movie</button>
+      <div id="movie-modal" class="modal hidden">
+        <div class="modal-content">
+          <span id="close-modal" class="close-button">&times;</span>
+          <h2>Add a Movie</h2>
+          <form id="movie-form">
+            <label for="movie-url">Enter IMDb or Letterboxd URL:</label>
+            <input type="url" id="movie-url" name="movie-url" required />
+            <button type="submit" class="submit-button">Submit</button>
+          </form>
+        </div>
+      </div>
     </main>
   </body>
 </html>

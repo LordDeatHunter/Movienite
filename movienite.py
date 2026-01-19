@@ -18,12 +18,14 @@ def fetch_imdb(url: str) -> dict | None:
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('span', class_='hero__primary-text').text.strip()
         description = soup.select_one("p[data-testid='plot'] > span[role='presentation']").text.strip()
-        imdb_url = soup.select_one("a[data-track-action='IMDb']")['href']
+        id = url.split('/')[4]
+        imdb_url = f'https://www.imdb.com/title/{id}/'
 
         return {
+            'id': id,
             'title': title,
             'description': description,
-            'letterboxd_url': url,
+            'letterboxd_url': '',
             'imdb_url': imdb_url,
             'boobies': 'no',
             'watched': 'no'
@@ -40,12 +42,16 @@ def fetch_letterboxd(url: str) -> dict | None:
         soup = BeautifulSoup(response.text, 'html.parser')
         title = soup.find('span', class_='js-widont').text.strip()
         description = soup.select_one('.truncate > p:nth-child(1)').text.strip()
+        imdb_url = soup.select_one("a[data-track-action='IMDb']")['href']
+        id = imdb_url.split('/')[4]
+        imdb_url = f'https://www.imdb.com/title/{id}/'
 
         return {
+            'id': id,
             'title': title,
             'description': description,
-            'letterboxd_url': '',
-            'imdb_url': url,
+            'letterboxd_url': url,
+            'imdb_url': imdb_url,
             'boobies': 'no',
             'watched': 'no'
         }
@@ -54,8 +60,13 @@ def fetch_letterboxd(url: str) -> dict | None:
 
 
 def add_movie(movie: dict):
+    existing_movies = get_movies()['movies']
+    for existing_movie in existing_movies:
+        if existing_movie['id'] == movie['id']:
+            raise ValueError("Movie already exists")
+
     with open(FILE_NAME, mode='a', encoding='utf-8', newline='') as file:
-        fieldnames = ['title', 'director', 'year', 'genre']
+        fieldnames = ['id', 'title', 'description', 'letterboxd_url', 'imdb_url', 'boobies', 'watched']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
 
         if file.tell() == 0:

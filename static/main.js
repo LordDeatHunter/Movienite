@@ -62,7 +62,6 @@ const fetchMovies = async () => {
     });
   } catch (error) {
     console.error("Error loading movies:", error);
-    alert("Failed to load movies. Please refresh the page.");
   }
 };
 
@@ -91,3 +90,58 @@ const main = () => {
 };
 
 window.addEventListener("DOMContentLoaded", main);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("movie-modal");
+  const addMovieButton = document.getElementById("add-movie-button");
+  const closeModal = document.getElementById("close-modal");
+  const movieForm = document.getElementById("movie-form");
+
+  const closeModalHandler = () => {
+    modal.classList.add("hidden");
+  };
+
+  addMovieButton.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+  });
+
+  closeModal.addEventListener("click", closeModalHandler);
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeModalHandler();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeModalHandler();
+    }
+  });
+
+  movieForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const movieUrl = document.getElementById("movie-url").value;
+
+    try {
+      const response = await fetch("/movies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ movie_url: movieUrl }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add movie");
+      }
+
+      closeModalHandler();
+      movieForm.reset();
+      void fetchMovies();
+    } catch (error) {
+      console.error("Error adding movie:", error);
+    }
+  });
+});

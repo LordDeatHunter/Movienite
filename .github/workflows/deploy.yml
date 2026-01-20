@@ -22,7 +22,8 @@ jobs:
             cd ${{ secrets.SITE_PATH }} &&
             git switch -f master &&
             git pull &&
-            docker compose up -d --build
+            cd docker &&
+            docker compose --env-file ../.env up -d --build
           "
 
       - name: cleanup

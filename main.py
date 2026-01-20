@@ -9,7 +9,8 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from movienite import add_movie as _add_movie, get_movies, fetch_imdb, fetch_letterboxd, fetch_boxd
+from movienite import fetch_imdb, fetch_letterboxd, fetch_boxd
+from database.db import add_movie as _add_movie, get_movies
 
 logger = logging.getLogger("uvicorn.error")
 

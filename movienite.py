@@ -1,11 +1,9 @@
-import csv
 import re
 from urllib.parse import quote_plus
+
 import requests
 from bs4 import BeautifulSoup
 
-fieldnames = ['id', 'title', 'original_title', 'description', 'letterboxd_url', 'imdb_url', 'boobies', 'watched', 'image_link', 'rating', 'votes']
-FILE_NAME = 'movies.csv'
 FETCH_HEADER = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -34,7 +32,7 @@ def fetch_imdb(url: str) -> dict | None:
         rating = rating[8].text.strip()
         score = rating.split('/')[0]
         votes = rating.split('/')[1][2:]
-        
+
         return {
             'id': id,
             'title': title,
@@ -97,35 +95,3 @@ def fetch_boxd(url: str) -> dict | None:
     response = requests.get(url, allow_redirects=True, timeout=10)
     final_url = response.url
     return fetch_letterboxd(final_url)
-
-
-def add_movie(movie: dict):
-    existing_movies = get_movies()['movies']
-    for existing_movie in existing_movies:
-        if existing_movie['id'] == movie['id']:
-            raise ValueError("Movie already exists")
-
-    with open(FILE_NAME, mode='a', encoding='utf-8', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        if file.tell() == 0:
-            writer.writeheader()
-
-        writer.writerow(movie)
-
-
-def get_movies():
-    movies_list = []
-    with open(FILE_NAME, mode='r', encoding='utf-8') as file:
-        csv_reader = csv.DictReader(file)
-        for row in csv_reader:
-            movies_list.append(row)
-
-    return {'movies': movies_list}
-
-
-def save_movies(data: dict):
-    with open(FILE_NAME, mode='w', encoding='utf-8', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        for movie in data['movies']:
-            writer.writerow(movie)

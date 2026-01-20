@@ -6,10 +6,12 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 COPY *.py /app/
-COPY pyproject.toml uv.lock ./
+COPY ../database/db.py /app/database/db.py
+COPY ../pyproject.toml uv.lock ./
+
 RUN uv sync --frozen --no-dev
 
-COPY static/ /app/static/
+COPY ../static /app/static/
 
 EXPOSE 8000
 

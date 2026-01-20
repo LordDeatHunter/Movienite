@@ -1,7 +1,7 @@
 const icons = {
   grid: "M8 8H4V4h4zm6-4h-4v4h4zm6 0h-4v4h4zM8 10H4v4h4zm6 0h-4v4h4zm6 0h-4v4h4zM8 16H4v4h4zm6 0h-4v4h4zm6 0h-4v4h4z",
-  list: "M21 6v2H3V6zM3 18h18v-2H3zm0-5h18v-2H3z"
-}
+  list: "M21 6v2H3V6zM3 18h18v-2H3zm0-5h18v-2H3z",
+};
 
 const createMovieCard = (movie) => {
   const card = document.createElement("div");
@@ -118,7 +118,7 @@ const createMovieCard = (movie) => {
       e.preventDefault();
       // Not implemented yet
       // console.log("discard movie", movie);
-      void fetch(`movies/${movie.id}/discard`, { method: "POST"});
+      void fetch(`movies/${movie.id}/discard`, { method: "POST" });
     });
     actions.appendChild(discardBtn);
 
@@ -175,6 +175,39 @@ const fetchMovies = async () => {
         upcomingList.appendChild(movieCard);
       }
     });
+
+    const { childElementCount: watchedCount } = watchedList;
+    const { childElementCount: upcomingCount } = upcomingList;
+
+    const updateHeadingCount = (sectionId, count) => {
+      const heading = document.querySelector(`#${sectionId} h2`);
+      if (!heading) return;
+
+      const spanId = `${sectionId}-count`;
+      let countSpan = document.getElementById(spanId);
+      if (!countSpan) {
+        countSpan = document.createElement("span");
+        countSpan.id = spanId;
+        countSpan.style.marginLeft = "0.5rem";
+        heading.appendChild(countSpan);
+      }
+      countSpan.textContent = `(${count})`;
+    };
+
+    updateHeadingCount("watched-movies", watchedCount);
+    updateHeadingCount("upcoming-movies", upcomingCount);
+
+    const ensureEmptyMessage = (listEl, count, message) => {
+      if (count > 0) return;
+
+      const p = document.createElement("p");
+      p.className = "empty-message";
+      p.textContent = message;
+      listEl.appendChild(p);
+    };
+
+    ensureEmptyMessage(watchedList, watchedCount, "No watched movies.");
+    ensureEmptyMessage(upcomingList, upcomingCount, "No upcoming movies.");
   } catch (error) {
     console.error("Error loading movies:", error);
   }
@@ -199,30 +232,21 @@ const setupCategoryToggles = () => {
   });
 };
 
-// eye slash thin - icon for "unwatch"
-// <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><path fill="currentColor" d="M51 37.31a4 4 0 0 0-6 5.38L67.59 67.5C29.34 89 13 124.81 12.34 126.38a4.08 4.08 0 0 0 0 3.25c.34.77 8.52 18.89 26.83 37.2c17 17 46.14 37.17 88.83 37.17a122.6 122.6 0 0 0 53.06-11.69l24 26.38a4 4 0 1 0 5.92-5.38Zm98.1 119.85a36 36 0 0 1-48.1-52.94ZM128 196c-32 0-59.89-11.65-83-34.62A135.8 135.8 0 0 1 20.44 128c3.65-7.23 20.09-36.81 52.68-54.43l22.45 24.7a44 44 0 0 0 59 64.83l20.89 23A114.9 114.9 0 0 1 128 196m6.78-103.36a4 4 0 0 1 1.49-7.86a44.15 44.15 0 0 1 35.54 39.09a4 4 0 0 1-3.61 4.35h-.38a4 4 0 0 1-4-3.63a36.1 36.1 0 0 0-29.04-31.95m108.88 37c-.41.91-10.2 22.58-32.38 42.45a4 4 0 0 1-2.67 1a4 4 0 0 1-2.67-7A136.7 136.7 0 0 0 235.56 128A136 136 0 0 0 211 94.62C187.89 71.65 160 60 128 60a122 122 0 0 0-20 1.63a4 4 0 0 1-1.32-7.89A129.3 129.3 0 0 1 128 52c42.7 0 71.87 20.22 88.83 37.18c18.31 18.31 26.49 36.44 26.83 37.2a4.08 4.08 0 0 1 0 3.25Z"/></svg>
-
-// eye thin - icon for "watch"
-// <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><path fill="currentColor" d="M243.66 126.38c-.34-.76-8.52-18.89-26.83-37.2C199.87 72.22 170.7 52 128 52S56.13 72.22 39.17 89.18c-18.31 18.31-26.49 36.44-26.83 37.2a4.08 4.08 0 0 0 0 3.25c.34.77 8.52 18.89 26.83 37.2c17 17 46.14 37.17 88.83 37.17s71.87-20.21 88.83-37.17c18.31-18.31 26.49-36.43 26.83-37.2a4.08 4.08 0 0 0 0-3.25m-32.7 35c-23.07 23-51 34.62-83 34.62s-59.89-11.65-83-34.62A135.7 135.7 0 0 1 20.44 128A135.7 135.7 0 0 1 45 94.62C68.11 71.65 96 60 128 60s59.89 11.65 83 34.62A135.8 135.8 0 0 1 235.56 128A135.7 135.7 0 0 1 211 161.38ZM128 84a44 44 0 1 0 44 44a44.05 44.05 0 0 0-44-44m0 80a36 36 0 1 1 36-36a36 36 0 0 1-36 36"/></svg>
-
-// discard movie
-// <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path fill="none" stroke="#f00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9.5 23l13-13.5M29 16c0 7.18-5.82 13-13 13S3 23.18 3 16S8.82 3 16 3s13 5.82 13 13"/></svg>
-
 const setupViewToggle = () => {
   const toggleViewButton = document.getElementById("view-toggle");
-  if (localStorage.getItem('view-type') === null) {
-    localStorage.setItem('view-type', 'list');
+  if (!localStorage.getItem("view-type")) {
+    localStorage.setItem("view-type", "list");
   }
   toggleViewButton.addEventListener("click", () => {
-    const isGridToggled = localStorage.getItem('view-type') === 'grid';
-    const newViewType = isGridToggled ? 'list' : 'grid';
-    localStorage.setItem('view-type', newViewType);
+    const isGridToggled = localStorage.getItem("view-type") === "grid";
+    const newViewType = isGridToggled ? "list" : "grid";
+    localStorage.setItem("view-type", newViewType);
     setItemView();
   });
 };
 
 const setItemView = () => {
-  const isGridToggled = localStorage.getItem('view-type') === 'grid';
+  const isGridToggled = localStorage.getItem("view-type") === "grid";
 
   // Update SVG Icon
   const viewPath = document.getElementById("view-icon");
@@ -231,9 +255,9 @@ const setItemView = () => {
   // Update watched/upcoming movies CSS
   const watchedList = document.getElementById("watched-list");
   const upcomingList = document.getElementById("upcoming-list");
-  watchedList.classList.toggle('movie-grid', isGridToggled);
-  upcomingList.classList.toggle('movie-grid', isGridToggled);
-}
+  watchedList.classList.toggle("movie-grid", isGridToggled);
+  upcomingList.classList.toggle("movie-grid", isGridToggled);
+};
 
 const main = () => {
   void fetchMovies();

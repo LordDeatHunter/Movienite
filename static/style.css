@@ -15,11 +15,6 @@ body {
 }
 
 .movie-list {
-  /*display: grid;*/
-  /*grid-template-columns: repeat(*/
-  /*  auto-fill,*/
-  /*  minmax(300px, 1fr)*/
-  /*); !* Increased min-width for wider cards *!*/
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -30,7 +25,7 @@ body {
 
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
 .movie-card {
@@ -332,4 +327,11 @@ h1 {
 
 .view-toggle-button:hover {
   background-color: #ccc;
+}
+
+.empty-message {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  grid-column: 1 / -1;
 }

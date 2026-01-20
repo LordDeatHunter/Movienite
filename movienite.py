@@ -1,14 +1,15 @@
 import csv
 import re
 from urllib.parse import quote_plus
-
 import requests
 from bs4 import BeautifulSoup
 
+fieldnames = ['id', 'title', 'original_title', 'description', 'letterboxd_url', 'imdb_url', 'boobies', 'watched', 'image_link', 'rating', 'votes']
 FILE_NAME = 'movies.csv'
 FETCH_HEADER = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    "Accept-Language": "en-US,en;q=0.9"
 }
 
 
@@ -18,19 +19,32 @@ def fetch_imdb(url: str) -> dict | None:
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
-        title = soup.find('span', class_='hero__primary-text').text.strip()
+        title = soup.find('span', class_='hero__primary-text')
+        original_title = title.parent.parent.find('div')
+        if original_title is not None:
+            original_title = title.parent.parent.find('div').text[16:]
+        else:
+            original_title = ""
+        title = title.text.strip()
         description = soup.select_one("p[data-testid='plot'] > span[role='presentation']").text.strip()
         id = url.split('/')[4]
         imdb_url = f'https://www.imdb.com/title/{id}/'
         image_link = soup.find('img', class_='ipc-image')['src']
-
+        rating = soup.find_all('span', class_='ipc-btn__text')
+        rating = rating[8].text.strip()
+        score = rating.split('/')[0]
+        votes = rating.split('/')[1][2:]
+        
         return {
             'id': id,
             'title': title,
+            'original_title': original_title,
             'description': description,
             'letterboxd_url': '',
             'imdb_url': imdb_url,
             'image_link': image_link,
+            'rating': score,
+            'votes': votes,
             'boobies': 'no',
             'watched': 'no'
         }
@@ -90,9 +104,7 @@ def add_movie(movie: dict):
             raise ValueError("Movie already exists")
 
     with open(FILE_NAME, mode='a', encoding='utf-8', newline='') as file:
-        fieldnames = ['id', 'title', 'description', 'letterboxd_url', 'imdb_url', 'boobies', 'watched', 'image_link']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-
         if file.tell() == 0:
             writer.writeheader()
 

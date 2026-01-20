@@ -2,6 +2,12 @@ const createMovieCard = (movie) => {
   const card = document.createElement("div");
   card.className = "movie-card";
 
+  const STAR_SVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#FFEA00" d="m12 17.275l-4.15 2.5q-.275.175-.575.15t-.525-.2t-.35-.437t-.05-.588l1.1-4.725L3.775 10.8q-.25-.225-.312-.513t.037-.562t.3-.45t.55-.225l4.85-.425l1.875-4.45q.125-.3.388-.45t.537-.15t.537.15t.388.45l1.875 4.45l4.85.425q.35.05.55.225t.3.45t.038.563t-.313.512l-3.675 3.175l1.1 4.725q.075.325-.05.588t-.35.437t-.525.2t-.575-.15z"/>
+    </svg>
+  `;
+
   // Add image on the left when available
   if (movie.image_link) {
     const img = document.createElement("img");
@@ -18,6 +24,14 @@ const createMovieCard = (movie) => {
   const title = document.createElement("h3");
   title.textContent = movie.title;
   content.appendChild(title);
+
+  const originalTitle = (movie.original_title ?? "").toString().trim();
+  if (originalTitle) {
+    const originalTitleEl = document.createElement("h4");
+    originalTitleEl.className = "movie-original-title";
+    originalTitleEl.textContent = "Original title: " + originalTitle;
+    content.appendChild(originalTitleEl);
+  }
 
   const description = document.createElement("p");
   description.textContent = movie.description;
@@ -45,12 +59,42 @@ const createMovieCard = (movie) => {
   content.appendChild(links);
   card.appendChild(content);
 
+  // Rating on the right edge: star, rating (/10), votes
+  const ratingRaw = (movie.rating ?? "").toString().trim();
+  const votesRaw = (movie.votes ?? movie.no_reviews ?? "").toString().trim();
+
+  if (ratingRaw || votesRaw) {
+    const ratingWrap = document.createElement("div");
+    ratingWrap.className = "movie-rating";
+
+    const star = document.createElement("div");
+    star.className = "rating-star";
+    star.innerHTML = STAR_SVG;
+    ratingWrap.appendChild(star);
+
+    const ratingText = document.createElement("div");
+    ratingText.className = "rating-value";
+    let ratingDisplay = "—/10";
+    if (ratingRaw) {
+      ratingDisplay = ratingRaw.includes("/") ? ratingRaw : `${ratingRaw}/10`;
+    }
+    ratingText.textContent = ratingDisplay;
+    ratingWrap.appendChild(ratingText);
+
+    const votesText = document.createElement("div");
+    votesText.className = "rating-votes";
+    votesText.textContent = votesRaw;
+    ratingWrap.appendChild(votesText);
+
+    card.appendChild(ratingWrap);
+  }
+
   return card;
 };
 
 const fetchMovies = async () => {
   try {
-    const response = await fetch(`${window.location.origin}/movies`);
+    const response = await fetch(`${globalThis.location.origin}/movies`);
 
     if (!response.ok) {
       throw new Error(`Failed to load movies: ${response.status}`);
@@ -103,7 +147,7 @@ const main = () => {
   setupCategoryToggles();
 };
 
-window.addEventListener("DOMContentLoaded", main);
+globalThis.addEventListener("DOMContentLoaded", main);
 
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("movie-modal");

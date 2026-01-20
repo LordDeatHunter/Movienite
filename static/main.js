@@ -116,7 +116,7 @@ const setupViewToggle = () => {
   });
 };
 
-function setItemView() {
+const setItemView = () => {
   const isGridToggled = localStorage.getItem('view-type') === 'grid';
 
   // Update SVG Icon

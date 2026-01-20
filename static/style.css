@@ -1,5 +1,55 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 
+:root {
+  --bg-gradient-start: #f4f4f4;
+  --bg-gradient-end: #eaeaea;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --text-tertiary: #444;
+  --card-bg: #fff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --input-border: #ccc;
+  --input-bg: #fff;
+  --modal-bg: #fff;
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  --button-bg: #007bff;
+  --button-hover: #0056b3;
+  --button-active-border: #003f7f;
+  --link-color: #007bff;
+  --link-hover: #0056b3;
+  --header-text: #222;
+  --section-heading: #333;
+  --empty-message: #666;
+  --action-btn-color: #333;
+  --discard-color: #d80000;
+  --description-text: #000000;
+}
+
+[data-theme="dark"] {
+  --bg-gradient-start: #1a1a1a;
+  --bg-gradient-end: #0d0d0d;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --text-tertiary: #c0c0c0;
+  --card-bg: #2a2a2a;
+  --card-shadow: rgba(0, 0, 0, 0.5);
+  --input-border: #555;
+  --input-bg: #333;
+  --modal-bg: #2a2a2a;
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  --button-bg: #1e5a9e;
+  --button-hover: #164478;
+  --button-active-border: #0d2e52;
+  --link-color: #4da3ff;
+  --link-hover: #66b3ff;
+  --header-text: #e0e0e0;
+  --section-heading: #e0e0e0;
+  --empty-message: #999;
+  --action-btn-color: #e0e0e0;
+  --discard-color: #ff4444;
+  --description-text: #d0d0d0;
+}
+
 * {
   font-family: "Roboto", sans-serif;
 }
@@ -8,8 +58,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #f4f4f4, #eaeaea);
-  color: #333;
+  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  color: var(--text-primary);
   height: 100%;
   width: 100%;
 }
@@ -29,9 +79,9 @@ body {
 }
 
 .movie-card {
-  background-color: #fff;
+  background-color: var(--card-bg);
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--card-shadow);
   padding: 15px;
   transition:
     transform 0.2s,
@@ -44,20 +94,20 @@ body {
 .movie-card h3 {
   margin: 0 0 10px;
   font-size: 1.2rem;
-  color: #444;
+  color: var(--text-tertiary);
 }
 
 .movie-original-title {
   margin: -6px 0 10px;
   font-size: 1rem;
   font-weight: 400;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .movie-card p {
   margin: 5px 0;
   font-size: 0.9rem;
-  color: #000000;
+  color: var(--description-text);
 }
 
 /* Image displayed on the left side with fixed height */
@@ -102,7 +152,7 @@ body {
   padding: 0;
   cursor: pointer;
   line-height: 0;
-  color: #333;
+  color: var(--action-btn-color);
 }
 
 .movie-action-btn:hover {
@@ -120,7 +170,7 @@ body {
 }
 
 .movie-action-btn.action-discard {
-  color: #d80000;
+  color: var(--discard-color);
 }
 
 /* Keep the rating items visually centered under the actions */
@@ -145,13 +195,13 @@ body {
   font-weight: 700;
   font-size: 1rem;
   line-height: 1;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .rating-votes {
   font-size: 0.85rem;
   line-height: 1.1;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
 }
 
@@ -164,19 +214,19 @@ body {
 
 .movie-links a {
   text-decoration: none;
-  color: #007bff;
+  color: var(--link-color);
   font-weight: bold;
   transition: color 0.2s;
 }
 
 .movie-links a:hover {
-  color: #0056b3;
+  color: var(--link-hover);
 }
 
 h1 {
   text-align: center;
   font-size: 2.5rem;
-  color: #222;
+  color: var(--header-text);
   margin: 20px 0;
 }
 
@@ -191,7 +241,7 @@ h1 {
   padding: 10px 20px;
   font-size: 1rem;
   border-radius: 5px;
-  background-color: #007bff;
+  background-color: var(--button-bg);
   color: white;
   border: 4px solid transparent;
   cursor: pointer;
@@ -199,15 +249,15 @@ h1 {
 }
 
 .category-button:hover {
-  background-color: #0056b3;
+  background-color: var(--button-hover);
 }
 
 /* Style for active category buttons */
 .category-button.active {
-  background-color: #0056b3; /* Darker blue for active state */
+  background-color: var(--button-hover);
   color: #fff;
   font-weight: bold;
-  border: 4px solid #003f7f; /* Add a border for emphasis */
+  border: 4px solid var(--button-active-border);
 }
 
 .movie-section {
@@ -218,7 +268,7 @@ h1 {
 .movie-section h2 {
   text-align: center;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--section-heading);
   margin-bottom: 10px;
 }
 
@@ -229,7 +279,7 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--modal-overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -241,12 +291,20 @@ h1 {
 }
 
 .modal-content {
-  background: white;
+  background: var(--modal-bg);
   padding: 20px;
   border-radius: 8px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--card-shadow);
+}
+
+.modal-content h2 {
+  color: var(--text-primary);
+}
+
+.modal-content label {
+  color: var(--text-primary);
 }
 
 .close-button {
@@ -262,16 +320,16 @@ h1 {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #007bff;
+  background-color: var(--button-bg);
   color: white;
   border: none;
   border-radius: 50%;
-  width: 80px; /* Increased size for better visibility */
-  height: 80px; /* Increased size for better visibility */
-  font-size: 1rem; /* Adjusted font size */
-  font-weight: bold; /* Made text bold */
+  width: 80px;
+  height: 80px;
+  font-size: 1rem;
+  font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--card-shadow);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -279,29 +337,31 @@ h1 {
 }
 
 .add-movie-button:hover {
-  background-color: #0056b3;
+  background-color: var(--button-hover);
 }
 
 /* Styled the text input field */
 #movie-url {
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 5px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 3px var(--card-shadow);
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
 }
 
 #movie-url:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  border-color: var(--button-bg);
+  box-shadow: 0 0 5px var(--button-bg);
   outline: none;
 }
 
 .submit-button {
-  background-color: #007bff;
+  background-color: var(--button-bg);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -311,27 +371,59 @@ h1 {
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: var(--button-hover);
 }
 
 .view-toggle-button {
   padding: 10px 12px;
   font-size: 1rem;
   border-radius: 5px;
-  background-color: white;
-  color: #555;
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
   border: 4px solid transparent;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .view-toggle-button:hover {
-  background-color: #ccc;
+  background-color: var(--input-border);
 }
 
 .empty-message {
   text-align: center;
-  color: #666;
+  color: var(--empty-message);
   font-style: italic;
   grid-column: 1 / -1;
+}
+
+/* Theme selector dropdown */
+.theme-selector {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.theme-dropdown {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border-radius: 5px;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--input-border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-dropdown:hover {
+  border-color: var(--button-bg);
+}
+
+.theme-dropdown:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 5px var(--button-bg);
+}
+
+header {
+  position: relative;
 }

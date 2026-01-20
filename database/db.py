@@ -17,7 +17,6 @@ DB_PORT = os.getenv("POSTGRES_PORT")
 DB_HOST = os.getenv("POSTGRES_HOST")
 
 DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-logger.info(DB_URL)
 
 
 # --- Helpers for converting between DB rows and the CSV-like dicts used by the app ---

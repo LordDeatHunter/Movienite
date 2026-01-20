@@ -78,6 +78,10 @@ def fetch_letterboxd(url: str) -> dict | None:
     except Exception:
         return None
 
+def fetch_boxd(url: str) -> dict | None:
+    response = requests.get(url, allow_redirects=True, timeout=10)
+    final_url = response.url
+    return fetch_letterboxd(final_url)
 
 def add_movie(movie: dict):
     existing_movies = get_movies()['movies']

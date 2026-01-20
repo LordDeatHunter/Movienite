@@ -9,11 +9,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from movienite import add_movie as _add_movie, get_movies, fetch_imdb, fetch_letterboxd
+from movienite import add_movie as _add_movie, get_movies, fetch_imdb, fetch_letterboxd, fetch_boxd
 
 logger = logging.getLogger("uvicorn.error")
 
-VALID_MOVIE_SITES = ['imdb.com', 'letterboxd.com']
+VALID_MOVIE_SITES = ['imdb.com', 'letterboxd.com', 'boxd.it']
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -58,6 +58,8 @@ async def add_new_movie(request: AddMovieRequest):
         movie_data = fetch_imdb(cleaned_url)
     elif host == "letterboxd.com":
         movie_data = fetch_letterboxd(cleaned_url)
+    elif host == "boxd.it":
+        movie_data = fetch_boxd(cleaned_url)
     else:
         logger.error("Invalid movie site")
         return {"error": "URL must be from IMDb or Letterboxd"}

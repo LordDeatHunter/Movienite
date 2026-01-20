@@ -1,3 +1,8 @@
+const icons = {
+  grid: "M8 8H4V4h4zm6-4h-4v4h4zm6 0h-4v4h4zM8 10H4v4h4zm6 0h-4v4h4zm6 0h-4v4h4zM8 16H4v4h4zm6 0h-4v4h4zm6 0h-4v4h4z",
+  list: "M21 6v2H3V6zM3 18h18v-2H3zm0-5h18v-2H3z"
+}
+
 const createMovieCard = (movie) => {
   const card = document.createElement("div");
   card.className = "movie-card";
@@ -98,9 +103,38 @@ const setupCategoryToggles = () => {
   });
 };
 
+const setupViewToggle = () => {
+  const toggleViewButton = document.getElementById("view-toggle");
+  if(localStorage.getItem('view-type') === undefined) {
+    localStorage.setItem('view-type', 'list');
+  }
+  toggleViewButton.addEventListener("click", () => {
+    const isGridToggled = localStorage.getItem('view-type') === 'grid' ?? 'grid';
+    const newViewType = isGridToggled ? 'list' : 'grid';
+    localStorage.setItem('view-type', newViewType);
+    setItemView();
+  });
+};
+
+function setItemView() {
+  const isGridToggled = localStorage.getItem('view-type') === 'grid';
+
+  // Update SVG Icon
+  const viewPath = document.getElementById("view-icon");
+  viewPath.setAttribute("d", isGridToggled ? icons.list : icons.grid);
+
+  // Update watched/upcoming movies CSS
+  const watchedList = document.getElementById("watched-list");
+  const upcomingList = document.getElementById("upcoming-list");
+  watchedList.classList.toggle('movie-grid', isGridToggled);
+  upcomingList.classList.toggle('movie-grid', isGridToggled);
+}
+
 const main = () => {
   void fetchMovies();
   setupCategoryToggles();
+  setupViewToggle();
+  setItemView();
 };
 
 window.addEventListener("DOMContentLoaded", main);

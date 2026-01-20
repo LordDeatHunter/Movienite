@@ -26,6 +26,11 @@ body {
   margin: 0 auto;
 }
 
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+}
+
 .movie-card {
   background-color: #fff;
   border-radius: 8px;
@@ -223,4 +228,19 @@ h1 {
 
 .submit-button:hover {
   background-color: #0056b3;
+}
+
+.view-toggle-button {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 5px;
+  background-color: white;
+  color: #555;
+  border: 4px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-toggle-button:hover {
+  background-color: #ccc;
 }

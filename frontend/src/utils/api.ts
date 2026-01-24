@@ -1,9 +1,6 @@
-export const API_URL: string =
-  (import.meta.env.VITE_API_URL as string) || "http://127.0.0.1:8000";
-
 export const api = {
   async getMovies() {
-    const response = await fetch(`${API_URL}/movies`);
+    const response = await fetch(`/api/movies`);
     if (!response.ok) {
       throw new Error(`Failed to load movies: ${response.status}`);
     }
@@ -12,7 +9,7 @@ export const api = {
   },
 
   async addMovie(movieUrl: string) {
-    const response = await fetch(`${API_URL}/movies`, {
+    const response = await fetch(`/api/movies`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ movie_url: movieUrl }),
@@ -24,7 +21,7 @@ export const api = {
   },
 
   async toggleWatch(movieId: string) {
-    const response = await fetch(`${API_URL}/movies/${movieId}/toggle_watch`, {
+    const response = await fetch(`/api/movies/${movieId}/toggle_watch`, {
       method: "POST",
     });
     if (!response.ok) {
@@ -34,7 +31,7 @@ export const api = {
   },
 
   async discardMovie(movieId: string) {
-    const response = await fetch(`${API_URL}/movies/${movieId}/discard`, {
+    const response = await fetch(`/api/movies/${movieId}/discard`, {
       method: "POST",
     });
     if (!response.ok) {

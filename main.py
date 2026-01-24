@@ -5,19 +5,16 @@ from urllib.parse import urlparse, urlunparse
 import tldextract
 import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from movienite import fetch_imdb, fetch_letterboxd, fetch_boxd
 from database.db import add_movie as _add_movie, get_movies
+from movienite import fetch_imdb, fetch_letterboxd, fetch_boxd
 
 logger = logging.getLogger("uvicorn.error")
 
 VALID_MOVIE_SITES = ['imdb.com', 'letterboxd.com', 'boxd.it']
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @asynccontextmanager
@@ -25,11 +22,6 @@ async def lifespan(_app: FastAPI):
     logger.info("Application starting up")
     yield
     logger.info("Application shutting down")
-
-
-@app.get("/")
-async def root():
-    return FileResponse("static/index.html")
 
 
 @app.get("/movies")
@@ -78,6 +70,7 @@ async def add_new_movie(request: AddMovieRequest):
 
     return {"message": "Movie added successfully"}
 
+
 @app.post("/movies/{movie_id}/toggle_watch")
 async def toggle_watch(movie_id: int):
     # Not implemented yet
@@ -89,8 +82,9 @@ async def discard_movie(movie_id: int):
     # Not implemented yet
     return {"message": f"Discarded movie {movie_id}"}
 
+
 def main():
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=23245)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 services:
-  movienite:
+  movienite-api:
     build:
       context: ..
-      dockerfile: ./docker/Dockerfile
+      dockerfile: docker/api.dockerfile
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -10,12 +10,15 @@ services:
       POSTGRES_HOST: movienite-db
       POSTGRES_PORT: 5432
     ports:
-      - "23245:8000"
-    volumes:
-      - ./movies.csv:/app/movies.csv
-    container_name: movienite-container
+      - "23245:23245"
+    container_name: movienite-api
     networks:
-      - movienite-network
+      - movienite-backend
+      - movienite-frontend
+    depends_on:
+      movienite-db:
+        condition: service_healthy
+
 
   movienite-db:
     image: postgres:18-alpine
@@ -28,9 +31,9 @@ services:
       - ../database/migrations/001-init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "${POSTGRES_PORT}:5432"
-    container_name: movienite-db-container
+    container_name: movienite-db
     networks:
-      - movienite-network
+      - movienite-backend
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -39,7 +42,9 @@ services:
 
 
 networks:
-  movienite-network:
+  movienite-backend:
+    driver: bridge
+  movienite-frontend:
     driver: bridge
 
 

@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@layer theme, base, components, utilities;
+
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
 
 :root {
@@ -24,7 +27,6 @@
   --discard-color: #d80000;
   --description-text: #000000;
 }
-
 [data-theme="dark"] {
   --bg-gradient-start: #1a1a1a;
   --bg-gradient-end: #0d0d0d;
@@ -56,39 +58,33 @@
 
 html,
 body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  @apply m-0 p-0 min-h-screen w-full;
+  background: linear-gradient(
+      135deg,
+      var(--bg-gradient-start),
+      var(--bg-gradient-end)
+    )
+    no-repeat fixed;
+  background-size: cover;
   color: var(--text-primary);
-  height: 100%;
-  width: 100%;
 }
 
 .movie-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  @apply flex flex-col gap-5 p-5 max-w-300 mx-auto my-0;
 }
 
 .movie-grid {
-  display: grid;
+  @apply grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
 .movie-card {
+  @apply rounded-lg p-4 flex items-start gap-4;
   background-color: var(--card-bg);
-  border-radius: 8px;
   box-shadow: 0 4px 6px var(--card-shadow);
-  padding: 15px;
   transition:
     transform 0.2s,
     box-shadow 0.2s;
-  display: flex; /* place image left, content right */
-  align-items: flex-start;
-  gap: 15px;
 }
 
 .movie-card h3 {
@@ -105,58 +101,34 @@ body {
 }
 
 .movie-card p {
-  margin: 5px 0;
-  font-size: 0.9rem;
+  @apply my-1 mx-0 text-sm;
   color: var(--description-text);
 }
 
-/* Image displayed on the left side with fixed height */
 .movie-image {
-  height: 100px; /* fixed height as requested */
-  width: auto; /* preserve aspect ratio */
-  flex-shrink: 0;
-  border-radius: 4px;
-  object-fit: contain; /* keep original aspect within bounds */
+  @apply h-25 w-auto shrink-0 rounded-sm object-contain;
 }
 
-/* Content wrapper to stack title, description, links */
 .movie-content {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  @apply flex flex-col flex-1;
 }
 
-/* Rating block on the right edge of the card */
 .movie-rating {
-  margin-left: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: flex-start;
-  gap: 6px;
-  min-width: 90px;
+  @apply ml-auto flex flex-col items-end justify-start gap-1.5 min-w-22.5;
 }
 
 .movie-actions {
-  display: flex;
-  gap: 6px;
-  width: 100%;
-  justify-content: center;
-  align-self: center;
+  @apply flex p-1.5 w-full justify-center self-center;
 }
 
 .movie-action-btn {
-  appearance: none;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
+  @apply appearance-none border-none bg-transparent p-0 cursor-pointer;
   line-height: 0;
   color: var(--action-btn-color);
 }
 
 .movie-action-btn:hover {
-  opacity: 0.85;
+  @apply opacity-85;
 }
 
 .movie-action-btn:active {
@@ -164,31 +136,25 @@ body {
 }
 
 .movie-action-btn svg {
-  width: 20px;
-  height: 20px;
-  display: block;
+  @apply w-5 h-5 block;
 }
 
 .movie-action-btn.action-discard {
   color: var(--discard-color);
 }
 
-/* Keep the rating items visually centered under the actions */
 .rating-star,
 .rating-value,
 .rating-votes {
-  align-self: center;
+  @apply self-center;
 }
 
 .rating-star {
-  width: 24px;
-  height: 24px;
+  @apply w-6 h-6;
 }
 
 .rating-star svg {
-  width: 100%;
-  height: 100%;
-  display: block;
+  @apply w-full h-full block;
 }
 
 .rating-value {
@@ -199,23 +165,19 @@ body {
 }
 
 .rating-votes {
+  @apply text-center;
   font-size: 0.85rem;
   line-height: 1.1;
   color: var(--text-secondary);
-  text-align: center;
 }
 
-/* Style for movie links */
 .movie-links {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
+  @apply mt-2.5 flex gap-2.5;
 }
 
 .movie-links a {
-  text-decoration: none;
+  @apply no-underline font-bold;
   color: var(--link-color);
-  font-weight: bold;
   transition: color 0.2s;
 }
 
@@ -224,78 +186,52 @@ body {
 }
 
 h1 {
+  @apply text-center my-5 mx-0;
   text-align: center;
   font-size: 2.5rem;
   color: var(--header-text);
-  margin: 20px 0;
 }
 
 .categories {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px 0;
+  @apply flex justify-center gap-5 my-5 mx-0;
 }
 
 .category-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  border-radius: 5px;
+  @apply py-2.5 px-5 text-base rounded-md text-white border-4 border-solid border-transparent cursor-pointer transition-colors duration-200 ease-in-out;
   background-color: var(--button-bg);
-  color: white;
-  border: 4px solid transparent;
-  cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .category-button:hover {
   background-color: var(--button-hover);
 }
 
-/* Style for active category buttons */
 .category-button.active {
+  @apply text-white font-bold;
   background-color: var(--button-hover);
-  color: #fff;
-  font-weight: bold;
   border: 4px solid var(--button-active-border);
 }
 
 .movie-section {
-  margin: 20px auto;
-  max-width: 1200px;
+  @apply my-5 mx-auto max-w-300;
 }
 
 .movie-section h2 {
-  text-align: center;
-  font-size: 1.5rem;
+  @apply text-center text-2xl mb-2.5;
   color: var(--section-heading);
-  margin-bottom: 10px;
 }
 
-/* Modal styles */
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  @apply fixed top-0 left-0 w-full h-full flex justify-center items-center z-1000;
   background-color: var(--modal-overlay);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
 }
 
 .modal.hidden {
-  display: none;
+  @apply hidden;
 }
 
 .modal-content {
+  @apply p-5 rounded-lg w-[90%] max-w-125;
   background: var(--modal-bg);
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
   box-shadow: 0 4px 6px var(--card-shadow);
 }
 
@@ -308,44 +244,22 @@ h1 {
 }
 
 .close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1.5rem;
-  cursor: pointer;
+  @apply absolute top-2.5 right-2.5 text-2xl cursor-pointer;
 }
 
-/* Adjusted styles for the add movie button text */
 .add-movie-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
+  @apply fixed bottom-5 right-5 text-white border-none rounded-full w-20 h-20 text-base font-bold cursor-pointer flex justify-center items-center text-center;
   background-color: var(--button-bg);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 80px;
-  height: 80px;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
   box-shadow: 0 4px 6px var(--card-shadow);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
 }
 
 .add-movie-button:hover {
   background-color: var(--button-hover);
 }
 
-/* Styled the text input field */
 #movie-url {
-  padding: 10px;
-  font-size: 1rem;
+  @apply p-2.5 text-base rounded-md;
   border: 1px solid var(--input-border);
-  border-radius: 5px;
   background-color: var(--input-bg);
   color: var(--text-primary);
   box-shadow: inset 0 1px 3px var(--card-shadow);
@@ -355,19 +269,14 @@ h1 {
 }
 
 #movie-url:focus {
+  @apply outline-none;
   border-color: var(--button-bg);
   box-shadow: 0 0 5px var(--button-bg);
-  outline: none;
 }
 
 .submit-button {
+  @apply text-white border-none py-2.5 px-5 rounded-md cursor-pointer mt-2.5;
   background-color: var(--button-bg);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
 }
 
 .submit-button:hover {
@@ -375,13 +284,10 @@ h1 {
 }
 
 .view-toggle-button {
-  padding: 10px 12px;
-  font-size: 1rem;
-  border-radius: 5px;
+  @apply py-2.5 px-3 text-base rounded-md cursor-pointer;
   background-color: var(--card-bg);
   color: var(--text-secondary);
   border: 4px solid transparent;
-  cursor: pointer;
   transition: background-color 0.2s;
 }
 
@@ -390,28 +296,20 @@ h1 {
 }
 
 .empty-message {
-  text-align: center;
+  @apply text-center italic;
   color: var(--empty-message);
-  font-style: italic;
   grid-column: 1 / -1;
 }
 
-/* Theme selector dropdown */
 .theme-selector {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  @apply absolute top-5 right-5;
 }
 
 .theme-dropdown {
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  border-radius: 5px;
+  @apply py-2 px-3 text-sm rounded-md cursor-pointer transition-all duration-200 ease-in-out;
   background-color: var(--card-bg);
   color: var(--text-primary);
   border: 2px solid var(--input-border);
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
 .theme-dropdown:hover {
@@ -419,11 +317,11 @@ h1 {
 }
 
 .theme-dropdown:focus {
-  outline: none;
+  @apply outline-none;
   border-color: var(--button-bg);
   box-shadow: 0 0 5px var(--button-bg);
 }
 
 header {
-  position: relative;
+  @apply relative;
 }

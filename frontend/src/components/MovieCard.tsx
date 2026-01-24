@@ -1,0 +1,104 @@
+import { Component, createSignal, Show } from "solid-js";
+import { api } from "@/utils/api";
+import { WatchIcon } from "@/components/icons/WatchIcon";
+import { UnwatchIcon } from "@/components/icons/UnwatchIcon";
+import { DiscardIcon } from "@/components/icons/DiscardIcon";
+import { MovieRating } from "@/components/MovieRating";
+import type { Movie } from "@/types";
+
+interface MovieCardProps {
+  movie: Movie;
+  onAction?: () => void;
+}
+
+const MovieCard: Component<MovieCardProps> = (props) => {
+  const [actionLoading, setActionLoading] = createSignal(false);
+
+  const handleWatchToggle = async () => {
+    setActionLoading(true);
+    try {
+      await api.toggleWatch(props.movie.id);
+      props.onAction?.();
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDiscard = async () => {
+    setActionLoading(true);
+    try {
+      await api.discardMovie(props.movie.id);
+      props.onAction?.();
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const isWatched = () => props.movie.watched === "yes";
+
+  return (
+    <div class="movie-card">
+      <Show when={props.movie.image_link}>
+        <img
+          src={props.movie.image_link}
+          alt={`${props.movie.title} poster`}
+          class="movie-image"
+        />
+      </Show>
+      <div class="movie-content">
+        <h3>{props.movie.title}</h3>
+        <Show when={props.movie.original_title?.trim()}>
+          <h4 class="movie-original-title">
+            Original title: {props.movie.original_title}
+          </h4>
+        </Show>
+        <p>{props.movie.description}</p>
+        <div class="movie-links">
+          <Show when={props.movie.letterboxd_url}>
+            <a href={props.movie.letterboxd_url} target="_blank">
+              Letterboxd
+            </a>
+          </Show>
+          <Show when={props.movie.imdb_url}>
+            <a href={props.movie.imdb_url} target="_blank">
+              IMDb
+            </a>
+          </Show>
+        </div>
+      </div>
+      <Show
+        when={props.movie.rating || props.movie.votes || props.movie.no_reviews}
+      >
+        <div class="movie-rating">
+          <div class="movie-actions">
+            <button
+              class="movie-action-btn action-watch"
+              title={isWatched() ? "Unwatch" : "Watch"}
+              aria-label={isWatched() ? "Unwatch" : "Watch"}
+              disabled={actionLoading()}
+              onClick={handleWatchToggle}
+            >
+              {isWatched() ? <UnwatchIcon /> : <WatchIcon />}
+            </button>
+            <button
+              class="movie-action-btn action-discard"
+              title="Discard"
+              aria-label="Discard"
+              disabled={actionLoading()}
+              onClick={handleDiscard}
+            >
+              <DiscardIcon />
+            </button>
+          </div>
+          <MovieRating
+            rating={props.movie.rating}
+            votes={props.movie.votes}
+            no_reviews={props.movie.no_reviews}
+          />
+        </div>
+      </Show>
+    </div>
+  );
+};
+
+export default MovieCard;

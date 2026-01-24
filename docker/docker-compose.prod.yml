@@ -25,7 +25,7 @@ services:
       dockerfile: docker/web.dockerfile
     container_name: movienite-web-prod
     ports:
-      - "3000:3000"
+      - "23246:3000"
     networks:
       - movienite-frontend
     depends_on:

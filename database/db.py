@@ -35,7 +35,8 @@ def bool_to_csv_str(value: bool) -> str:
 def row_to_movie_dict(row: dict) -> dict:
     if row is None:
         return {}
-    return {
+
+    movie = {
         'id': row.get('id'),
         'title': row.get('title') or '',
         'original_title': row.get('original_title') or '',
@@ -49,6 +50,18 @@ def row_to_movie_dict(row: dict) -> dict:
         'votes': row.get('votes') or ''
     }
 
+    if row.get('user_id') is not None:
+        movie['user'] = {
+            'id': row.get('user_id'),
+            'username': row.get('user_username', ''),
+            'avatar_url': row.get('user_avatar_url', None),
+            'discord_id': row.get('user_discord_id', None),
+        }
+    else:
+        movie['user'] = None
+
+    return movie
+
 
 def get_movies() -> dict:
     """Return all movies from the DB as {'movies': [...]} (CSV-like dicts)."""
@@ -57,7 +70,18 @@ def get_movies() -> dict:
         with conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT m.*,
+                SELECT m.id,
+                       m.title,
+                       m.original_title,
+                       m.description,
+                       m.letterboxd_url,
+                       m.imdb_url,
+                       m.boobies,
+                       m.watched,
+                       m.image_link,
+                       m.rating,
+                       m.votes,
+                       m.user_id,
                        u.username   AS user_username,
                        u.avatar_url AS user_avatar_url,
                        u.discord_id AS user_discord_id
@@ -68,16 +92,7 @@ def get_movies() -> dict:
             )
             rows = cur.fetchall()
             for r in rows:
-                movie = row_to_movie_dict(r)
-                if r["user_id"]:
-                    user = {
-                        "username": r["user_username"],
-                        "avatar_url": r["user_avatar_url"],
-                        "discord_id": r["user_discord_id"],
-                    }
-                    movie['user'] = user
-
-                movies.append(movie)
+                movies.append(row_to_movie_dict(r))
     return {'movies': movies}
 
 
@@ -95,6 +110,8 @@ def add_movie(movie: dict) -> None:
     except Exception:
         rating_val = None
 
+    user_id = movie.get('user_id')
+
     with psycopg.connect(DB_URL) as conn:
         with conn.cursor() as cur:
             cur.execute('SELECT 1 FROM movies WHERE id = %s', (movie_id,))
@@ -104,8 +121,8 @@ def add_movie(movie: dict) -> None:
             cur.execute(
                 """
                 INSERT INTO movies (id, title, original_title, description, letterboxd_url, imdb_url, boobies, watched,
-                                    image_link, rating, votes)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                    image_link, rating, votes, user_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     movie_id,
@@ -118,7 +135,8 @@ def add_movie(movie: dict) -> None:
                     watched,
                     movie.get('image_link'),
                     rating_val,
-                    movie.get('votes')
+                    movie.get('votes'),
+                    user_id,
                 )
             )
             conn.commit()
@@ -147,8 +165,8 @@ def save_movies(data: dict) -> None:
                 cur.execute(
                     """
                     INSERT INTO movies (id, title, original_title, description, letterboxd_url, imdb_url, boobies,
-                                        watched, image_link, rating, votes)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                        watched, image_link, rating, votes, user_id)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (id) DO UPDATE SET title          = EXCLUDED.title,
                                                    original_title = EXCLUDED.original_title,
                                                    description    = EXCLUDED.description,
@@ -158,7 +176,8 @@ def save_movies(data: dict) -> None:
                                                    watched        = EXCLUDED.watched,
                                                    image_link     = EXCLUDED.image_link,
                                                    rating         = EXCLUDED.rating,
-                                                   votes          = EXCLUDED.votes
+                                                   votes          = EXCLUDED.votes,
+                                                   user_id        = EXCLUDED.user_id
                     """,
                     (
                         movie_id,
@@ -171,7 +190,8 @@ def save_movies(data: dict) -> None:
                         watched,
                         movie.get('image_link'),
                         rating_val,
-                        movie.get('votes')
+                        movie.get('votes'),
+                        movie.get('user_id'),
                     )
                 )
             conn.commit()

@@ -135,7 +135,7 @@ class AddMovieRequest(BaseModel):
 
 
 @app.post("/movies")
-async def add_new_movie(request: AddMovieRequest):
+async def add_new_movie(request: AddMovieRequest, session_token: str | None = Cookie(None)):
     movie_url = request.movie_url
     if not movie_url.startswith("http://") and not movie_url.startswith("https://"):
         logger.warning("URL missing scheme, adding https://")
@@ -162,6 +162,17 @@ async def add_new_movie(request: AddMovieRequest):
     if not movie_data:
         logger.error("Failed to fetch movie data")
         return {"error": "Failed to fetch movie data"}
+
+    if session_token:
+        try:
+            payload = decode_session_jwt(session_token)
+            email = payload.get('email')
+            if email:
+                user_row = get_user_by_mail(email)
+                if user_row and user_row.get('id'):
+                    movie_data['user_id'] = user_row.get('id')
+        except Exception as e:
+            logger.debug(f"Could not attach user to movie: {e}")
 
     try:
         _add_movie(movie_data)

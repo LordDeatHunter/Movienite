@@ -159,6 +159,11 @@ body {
   color: var(--text-secondary);
 }
 
+.movie-added-by {
+  @apply mt-1 text-sm font-normal;
+  color: var(--text-secondary);
+}
+
 .movie-card p {
   @apply my-2 mx-0 text-sm leading-relaxed;
   color: var(--description-text);

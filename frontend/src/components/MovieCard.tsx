@@ -69,6 +69,11 @@ const MovieCard: Component<MovieCardProps> = (props) => {
             </a>
           </Show>
         </div>
+        <Show when={props.movie.user?.username}>
+          <div class="movie-added-by">
+            Added by {props.movie.user!.username}
+          </div>
+        </Show>
       </div>
       <Show
         when={props.movie.rating || props.movie.votes || props.movie.no_reviews}

@@ -88,8 +88,6 @@ async def callback(code: str):
         samesite="lax",
     )
 
-    print(discord_user_info)
-
     user = NewUser(
         username=discord_user_info['username'],
         avatar_url=discord_user_info['avatar'],

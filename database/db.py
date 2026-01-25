@@ -74,7 +74,7 @@ def get_movies() -> dict:
                         "username": r["user_username"],
                         "avatar_url": r["user_avatar_url"],
                         "discord_id": r["user_discord_id"],
-                    } if r["user_id"] else None
+                    }
                     movie['user'] = user
 
                 movies.append(movie)

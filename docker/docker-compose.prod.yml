@@ -3,8 +3,8 @@ services:
   movienite-api:
     restart: always
     environment:
-      - LOG_LEVEL=info
-      - WORKERS=4
+      LOG_LEVEL: info
+      WORKERS: 4
     logging:
       driver: "json-file"
       options:
@@ -24,10 +24,6 @@ services:
       context: ..
       dockerfile: docker/web.dockerfile
     container_name: movienite-web-prod
-    environment:
-      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
-      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
-      DISCORD_REDIRECT_URI: ${DISCORD_REDIRECT_URI}
     ports:
       - "23246:3000"
     networks:

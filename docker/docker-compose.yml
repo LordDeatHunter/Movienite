@@ -10,6 +10,9 @@ services:
       POSTGRES_HOST: movienite-db
       POSTGRES_PORT: 5432
       JWT_SECRET: ${JWT_SECRET}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET}
+      DISCORD_REDIRECT_URI: ${DISCORD_REDIRECT_URI}
     ports:
       - "23245:23245"
     container_name: movienite-api

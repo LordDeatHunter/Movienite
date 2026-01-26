@@ -15,20 +15,17 @@ import { makeComparator, SortField } from "@/utils/sort";
 const App = () => {
   const [showWatched, setShowWatched] = createSignal(true);
   const [showUpcoming, setShowUpcoming] = createSignal(true);
-  const [viewType, setViewType] = useLocalStorage<"list" | "grid">(
-    "view-type",
-    "list",
-  );
   const [modalOpen, setModalOpen] = createSignal(false);
 
-  const [sortField, setSortField] = useLocalStorage<SortField>(
-    "sort-field",
-    SortField.Date,
-  );
-  const [sortReverse, setSortReverse] = useLocalStorage<string>(
-    "sort-reverse",
-    "true",
-  );
+  const { value: viewType, setValue: setViewType } = useLocalStorage<
+    "list" | "grid"
+  >("view-type", "list");
+
+  const { value: sortField, setValue: setSortField } =
+    useLocalStorage<SortField>("sort-field", SortField.Date);
+
+  const { value: sortReverse, updateWithPrevious: toggleSortReverse } =
+    useLocalStorage<"true" | "false">("sort-reverse", "true");
 
   const watchedMoviesRaw = createMemo(() =>
     movieStore.movies.filter((m) => m.watched === "yes"),
@@ -61,7 +58,7 @@ const App = () => {
 
   const handleSortFieldChange = (val: SortField) => setSortField(val);
   const handleReverseToggle = () =>
-    setSortReverse(sortReverse() === "true" ? "false" : "true");
+    toggleSortReverse((previous) => (previous === "true" ? "false" : "true"));
 
   return (
     <>

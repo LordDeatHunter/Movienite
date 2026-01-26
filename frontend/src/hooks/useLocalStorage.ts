@@ -12,5 +12,13 @@ export const useLocalStorage = <T extends string>(
     storage.set(key, newValue);
   };
 
-  return [value, updateValue] as const;
+  const updateWithPrevious = (updater: (prev: T) => T) => {
+    setValue((prev) => {
+      const newValue = updater(prev);
+      storage.set(key, newValue);
+      return newValue;
+    });
+  };
+
+  return { value, setValue: updateValue, updateWithPrevious };
 };

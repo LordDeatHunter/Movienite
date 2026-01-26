@@ -87,7 +87,7 @@ const App = () => {
           onReverseToggle={handleReverseToggle}
         />
 
-        <Show when={movieStore.loading}>
+        <Show when={movieStore.loading && movieStore.movies.length === 0}>
           <p class="empty-message">Loading movies...</p>
         </Show>
 

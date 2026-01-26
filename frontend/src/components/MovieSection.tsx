@@ -1,10 +1,10 @@
-import { type Component, For, Show } from "solid-js";
+import { Accessor, type Component, For, Show } from "solid-js";
 import MovieCard from "@/components/MovieCard";
 import type { Movie } from "@/types";
 
 interface MovieSectionProps {
   title: string;
-  movies: Movie[];
+  movies: Accessor<Movie[]>;
   viewType?: "list" | "grid";
   onAction?: () => void;
 }
@@ -16,16 +16,16 @@ const MovieSection: Component<MovieSectionProps> = (props) => {
   return (
     <section class="movie-section">
       <h2 class="section-heading">
-        {props.title} {`(${props.movies.length})`}
+        {props.title} {`(${props.movies().length})`}
       </h2>
       <div class={gridClass()}>
         <Show
-          when={props.movies.length > 0}
+          when={props.movies().length > 0}
           fallback={
             <p class="empty-message">No {props.title.toLowerCase()} movies.</p>
           }
         >
-          <For each={props.movies}>
+          <For each={props.movies()}>
             {(movie) => (
               <MovieCard
                 movie={movie}

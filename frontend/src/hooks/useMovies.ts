@@ -1,13 +1,13 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal } from "solid-js";
 import { api } from "@/utils/api";
 import type { Movie } from "@/types";
 
-export const useMovies = () => {
-  const [movies, setMovies] = createSignal<Movie[]>([]);
-  const [loading, setLoading] = createSignal(true);
-  const [error, setError] = createSignal<string | null>(null);
+const [movies, setMovies] = createSignal<Movie[]>([]);
+const [loading, setLoading] = createSignal(true);
+const [error, setError] = createSignal<string | null>(null);
 
-  const fetchMovies = async () => {
+export const moviesApi = {
+  async fetchMovies() {
     setLoading(true);
     setError(null);
     try {
@@ -18,16 +18,9 @@ export const useMovies = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  onMount(() => {
-    void fetchMovies();
-  });
-
-  return {
-    movies,
-    loading,
-    error,
-    refetch: fetchMovies,
-  };
+  },
 };
+
+void moviesApi.fetchMovies();
+
+export { movies, loading, error };

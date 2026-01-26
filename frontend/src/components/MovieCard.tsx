@@ -4,8 +4,8 @@ import { WatchIcon } from "@/components/icons/WatchIcon";
 import { UnwatchIcon } from "@/components/icons/UnwatchIcon";
 import { DiscardIcon } from "@/components/icons/DiscardIcon";
 import { MovieRating } from "@/components/MovieRating";
-import { useAuth } from "@/hooks/useAuth";
 import type { Movie } from "@/types";
+import { user } from "@/hooks/useAuth";
 
 interface MovieCardProps {
   movie: Movie;
@@ -15,8 +15,6 @@ interface MovieCardProps {
 
 const MovieCard: Component<MovieCardProps> = (props) => {
   const [actionLoading, setActionLoading] = createSignal(false);
-
-  const { user } = useAuth();
 
   const handleWatchToggle = async () => {
     setActionLoading(true);

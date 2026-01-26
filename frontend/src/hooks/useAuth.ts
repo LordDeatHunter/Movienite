@@ -1,4 +1,4 @@
-import { createSignal, onMount } from "solid-js";
+import { createSignal } from "solid-js";
 import { api } from "@/utils/api";
 
 export interface User {
@@ -15,8 +15,8 @@ const [user, setUser] = createSignal<User | null>(null);
 const [loading, setLoading] = createSignal(false);
 const [error, setError] = createSignal<string | null>(null);
 
-export const useAuth = () => {
-  const fetchUser = async () => {
+export const authApi = {
+  async fetchUser() {
     if (loading()) return;
 
     setLoading(true);
@@ -32,9 +32,9 @@ export const useAuth = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },
 
-  const login = async () => {
+  async login() {
     try {
       const { url } = await api.getLoginUrl();
       window.location.href = url;
@@ -42,22 +42,14 @@ export const useAuth = () => {
       console.error("Failed to get login URL:", err);
       setError("Failed to initiate login");
     }
-  };
+  },
 
-  const logout = async () => {
+  async logout() {
     await api.logout();
     setUser(null);
-  };
-
-  onMount(() => {
-    void fetchUser();
-  });
-
-  return {
-    user,
-    loading,
-    error,
-    login,
-    logout,
-  };
+  },
 };
+
+void authApi.fetchUser();
+
+export { user, loading, error };

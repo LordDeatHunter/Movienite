@@ -11,6 +11,7 @@ export interface Movie {
   no_reviews?: string;
   watched?: string; // "yes" or undefined
   user?: {
+    id: string;
     username: string;
     avatar_url?: string;
     discord_id?: string;

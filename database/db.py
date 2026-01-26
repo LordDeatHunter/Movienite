@@ -248,3 +248,47 @@ def get_user_by_mail(mail: str) -> dict | None:
                     'is_admin': bool(row.get('is_admin'))
                 }
     return None
+
+
+def get_movie_by_id(movie_id: str) -> dict | None:
+    """Return a single movie row (raw DB fields) or None if not found.
+
+    Returns a dict with at least 'id', 'user_id', and 'watched' keys when present.
+    """
+    with psycopg.connect(DB_URL, row_factory=dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id, user_id, watched
+                FROM movies
+                WHERE id = %s
+                """,
+                (movie_id,)
+            )
+            row = cur.fetchone()
+            return row if row else None
+
+
+def delete_movie(movie_id: str) -> bool:
+    """Delete a movie by id. Returns True if a row was deleted, False otherwise."""
+    with psycopg.connect(DB_URL) as conn:
+        with conn.cursor() as cur:
+            cur.execute('DELETE FROM movies WHERE id = %s RETURNING id', (movie_id,))
+            res = cur.fetchone()
+            conn.commit()
+            return bool(res)
+
+
+def toggle_movie_watched(movie_id: str) -> bool | None:
+    """Toggle the watched flag for a movie and return the new watched value (True/False).
+
+    Returns None if the movie was not found.
+    """
+    with psycopg.connect(DB_URL, row_factory=dict_row) as conn:
+        with conn.cursor() as cur:
+            cur.execute('UPDATE movies SET watched = NOT watched WHERE id = %s RETURNING watched', (movie_id,))
+            row = cur.fetchone()
+            conn.commit()
+            if not row:
+                return None
+            return bool(row.get('watched'))

@@ -11,12 +11,16 @@ export interface User {
   is_admin: boolean;
 }
 
-export function useAuth() {
-  const [user, setUser] = createSignal<User | null>(null);
-  const [loading, setLoading] = createSignal(true);
-  const [error, setError] = createSignal<string | null>(null);
+const [user, setUser] = createSignal<User | null>(null);
+const [loading, setLoading] = createSignal(false);
+const [error, setError] = createSignal<string | null>(null);
 
+export const useAuth = () => {
   const fetchUser = async () => {
+    if (loading()) return;
+
+    setLoading(true);
+
     try {
       const userData = await api.getUser();
       setUser(userData);
@@ -56,4 +60,4 @@ export function useAuth() {
     login,
     logout,
   };
-}
+};

@@ -70,7 +70,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
   };
 
   const boobiesLabel = (boobies: boolean) =>
-    boobies === "yes" ? "No boobies..." : "Has boobies!";
+    boobies ? "Has boobies!" : "No boobies...";
 
   return (
     <div
@@ -135,8 +135,8 @@ const MovieCard: Component<MovieCardProps> = (props) => {
             <Show when={canToggleBoobies()}>
               <button
                 class="movie-action-btn action-nsfw"
-                title={boobiesLabel(!props.movie.boobies)}
-                aria-label={boobiesLabel(!!props.movie.boobies)}
+                title={boobiesLabel(props.movie.boobies !== "yes")}
+                aria-label={boobiesLabel(props.movie.boobies === "yes")}
                 disabled={actionLoading()}
                 onClick={handleToggleBoobies}
               >

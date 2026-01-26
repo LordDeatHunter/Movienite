@@ -1,5 +1,5 @@
 import { Show } from "solid-js";
-import type { User } from "@/hooks/useAuth";
+import type { User } from "@/hooks/authStore";
 
 interface LoginProps {
   user: User | null;

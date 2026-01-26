@@ -4,8 +4,8 @@ import { WatchIcon } from "@/components/icons/WatchIcon";
 import { UnwatchIcon } from "@/components/icons/UnwatchIcon";
 import { DiscardIcon } from "@/components/icons/DiscardIcon";
 import { MovieRating } from "@/components/MovieRating";
+import authStore from "@/hooks/authStore";
 import type { Movie } from "@/types";
-import { user } from "@/hooks/useAuth";
 
 interface MovieCardProps {
   movie: Movie;
@@ -38,17 +38,16 @@ const MovieCard: Component<MovieCardProps> = (props) => {
 
   const isWatched = () => props.movie.watched === "yes";
 
-  const canToggleWatch = () => {
-    const u = user();
-    return !!u && u.is_admin;
-  };
+  const canToggleWatch = () => !!authStore.user && authStore.user.is_admin;
 
   const canDiscard = () => {
-    const u = user();
-    if (!u) return false;
-    if (u.is_admin) return true;
+    if (!authStore.user) return false;
+    if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === u.id && props.movie.watched !== "yes";
+    return (
+      props.movie.user?.id === authStore.user.id &&
+      props.movie.watched !== "yes"
+    );
   };
 
   return (

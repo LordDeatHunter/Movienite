@@ -1,4 +1,4 @@
-import { User } from "@/hooks/useAuth";
+import type { User } from "@/hooks/authStore";
 import type { Movie } from "@/types";
 
 export const api = {

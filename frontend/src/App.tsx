@@ -7,11 +7,10 @@ import { ViewToggle } from "@/components/ViewToggle";
 import { AddMovieButton } from "@/components/AddMovieButton";
 import { AddMovieModal } from "@/components/AddMovieModal";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { authApi, loading as authLoading, user } from "@/hooks/useAuth";
 import movieStore, { fetchMovies } from "@/hooks/movieStore";
+import authStore, { login, logout } from "@/hooks/authStore";
 
 const App = () => {
-  const { login, logout } = authApi;
   const [showWatched, setShowWatched] = createSignal(true);
   const [showUpcoming, setShowUpcoming] = createSignal(true);
   const [viewType, setViewType] = useLocalStorage<"list" | "grid">(
@@ -42,8 +41,8 @@ const App = () => {
       <Header />
       <main>
         <Login
-          user={user()}
-          loading={authLoading()}
+          user={authStore.user}
+          loading={authStore.loading}
           onLogin={login}
           onLogout={logout}
         />
@@ -85,7 +84,7 @@ const App = () => {
           </Show>
         </Show>
 
-        <Show when={!!user()}>
+        <Show when={!!authStore.user}>
           <AddMovieButton onClick={openModal} />
           <AddMovieModal
             isOpen={modalOpen()}

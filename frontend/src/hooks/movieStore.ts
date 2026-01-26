@@ -2,10 +2,16 @@ import { createStore } from "solid-js/store";
 import { api } from "@/utils/api";
 import type { Movie } from "@/types";
 
-const [movieStore, setMovieStore] = createStore({
-  movies: [] as Movie[],
-  loading: true,
-  error: null as string | null,
+interface MovieStore {
+  movies: Movie[];
+  loading: boolean;
+  error: string | null;
+}
+
+const [movieStore, setMovieStore] = createStore<MovieStore>({
+  movies: [],
+  loading: false,
+  error: null,
 });
 export const setMovies = (movies: Movie[]) => setMovieStore("movies", movies);
 export const setLoading = (loading: boolean) =>
@@ -13,15 +19,18 @@ export const setLoading = (loading: boolean) =>
 export const setError = (error: string | null) => setMovieStore("error", error);
 
 export const fetchMovies = async () => {
+  if (movieStore.loading) return;
+
   setLoading(true);
   setError(null);
   let data = [] as Movie[];
+
   try {
     data = await api.getMovies();
     setMovies(data);
     return data;
-  } catch (e: any) {
-    setError(e.message || "Unknown error");
+  } catch (err: any) {
+    setError(err.message || "Unknown error");
   } finally {
     setLoading(false);
   }

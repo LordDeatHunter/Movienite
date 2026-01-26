@@ -82,12 +82,14 @@ const App = () => {
           </Show>
         </Show>
 
-        <AddMovieButton onClick={openModal} />
-        <AddMovieModal
-          isOpen={modalOpen()}
-          onClose={closeModal}
-          onMovieAdded={refetch}
-        />
+        <Show when={!!user()}>
+          <AddMovieButton onClick={openModal} />
+          <AddMovieModal
+            isOpen={modalOpen()}
+            onClose={closeModal}
+            onMovieAdded={refetch}
+          />
+        </Show>
       </main>
     </>
   );

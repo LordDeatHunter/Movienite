@@ -671,16 +671,27 @@ header {
 }
 
 .user-filter-option {
-  @apply w-full text-left px-4 py-2 text-sm cursor-pointer transition-colors border-none;
+  @apply w-full text-left px-4 py-2 text-sm cursor-pointer transition-colors border-none flex items-center gap-2;
   background-color: transparent;
   color: var(--text-primary);
 }
 
-.user-filter-option:hover {
+.user-filter-option:hover,
+.user-filter-option.highlighted {
   background-color: color-mix(in srgb, var(--button-bg) 10%, var(--card-bg));
 }
 
 .user-filter-option.selected {
   background-color: color-mix(in srgb, var(--button-bg) 20%, var(--card-bg));
   font-weight: 500;
+}
+
+.user-filter-avatar {
+  @apply w-6 h-6 rounded-full object-cover flex-shrink-0;
+}
+
+.user-filter-avatar-placeholder {
+  @apply w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0;
+  background-color: var(--input-border);
+  color: var(--text-secondary);
 }

@@ -7,6 +7,8 @@ export enum SortField {
   Rating = "rating",
 }
 
+export const PAGE_SIZES = [5, 10, 20, 50];
+
 type MovieComparator = (movie1: Movie, movie2: Movie) => number;
 
 const getInsertDateOrDefault = (movie: Movie, defaultDate: number = 0) =>

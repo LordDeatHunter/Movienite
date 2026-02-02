@@ -1,8 +1,8 @@
-import { Accessor, type Component, For, Show } from "solid-js";
+import { Accessor, type Component, For, ParentProps, Show } from "solid-js";
 import MovieCard from "@/components/MovieCard";
 import type { Movie } from "@/types";
 
-interface MovieSectionProps {
+interface MovieSectionProps extends ParentProps {
   title: string;
   movies: Accessor<Movie[]>;
   viewType?: "list" | "grid";
@@ -18,6 +18,7 @@ const MovieSection: Component<MovieSectionProps> = (props) => {
       <h2 class="section-heading">
         {props.title} {`(${props.movies().length})`}
       </h2>
+      {props.children}
       <div class={gridClass()}>
         <Show
           when={props.movies().length > 0}

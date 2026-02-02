@@ -1,12 +1,14 @@
 import { FaSolidSortAmountDownAlt, FaSolidSortAmountUp } from "solid-icons/fa";
 import type { Component } from "solid-js";
-import type { SortField } from "@/utils/sort";
+import { PAGE_SIZES, type SortField } from "@/utils/sort";
 
 interface SortControlsProps {
   field: SortField;
   onFieldChange: (f: SortField) => void;
   reverse: boolean;
   onReverseToggle: () => void;
+  pageSize: string;
+  onPageSizeChange: (f: number) => void;
 }
 
 const SortControls: Component<SortControlsProps> = (props) => {
@@ -39,6 +41,16 @@ const SortControls: Component<SortControlsProps> = (props) => {
       >
         {props.reverse ? <FaSolidSortAmountDownAlt /> : <FaSolidSortAmountUp />}
       </button>
+
+      <select
+        id="page-size"
+        class="page-size-select"
+        value={props.pageSize}
+        onInput={(e) => props.onPageSizeChange(Number((e.target as HTMLSelectElement).value))}
+      >
+        <option value="0">All</option>
+        {PAGE_SIZES.map(size => <option value={size}>{size}</option>)}
+      </select>
     </div>
   );
 };

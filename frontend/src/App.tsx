@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, onMount, Show } from "solid-js";
 import MovieSection from "@/components/MovieSection";
 import Login from "@/components/Login";
 import { Header } from "@/components/Header";
@@ -13,6 +13,7 @@ import movieStore, { fetchMovies } from "@/hooks/movieStore";
 import authStore, { login, logout } from "@/hooks/authStore";
 import SortControls from "@/components/SortControls";
 import { makeComparator, SortField } from "@/utils/sort";
+import PaginationControls from "./components/PaginationControls";
 
 const App = () => {
   const [showWatched, setShowWatched] = createSignal(true);
@@ -20,6 +21,10 @@ const App = () => {
   const [modalOpen, setModalOpen] = createSignal(false);
   const [searchQuery, setSearchQuery] = createSignal("");
   const [userFilter, setUserFilter] = createSignal("");
+  const [pageNumWatched, setPageNumWatched] = createSignal(0);
+  const [totalPagesWatched, setTotalPagesWatched] = createSignal(0);
+  const [pageNumUpcoming, setPageNumUpcoming] = createSignal(0);
+  const [totalPagesUpcoming, setTotalPagesUpcoming] = createSignal(0);
 
   const { value: viewType, setValue: setViewType } = useLocalStorage<
     "list" | "grid"
@@ -30,6 +35,9 @@ const App = () => {
 
   const { value: sortReverse, updateWithPrevious: toggleSortReverse } =
     useLocalStorage<"true" | "false">("sort-reverse", "true");
+
+  const { value: pageSize, setValue: setPageSize } =
+    useLocalStorage<string>("page-size", "0");
 
   const filteredMovies = createMemo(() => {
     const titleQuery = searchQuery().toLowerCase().trim();
@@ -61,6 +69,12 @@ const App = () => {
     const arr = [...watchedMoviesRaw()];
     const comparator = makeComparator(sortField(), sortReverse() === "true");
     arr.sort(comparator);
+    const maxPageSize = Number(pageSize());
+    if(maxPageSize > 0)
+    {
+      const skipMovies = maxPageSize * pageNumWatched();
+      return arr.slice(skipMovies, skipMovies + maxPageSize);
+    }
     return arr;
   });
 
@@ -68,6 +82,12 @@ const App = () => {
     const arr = [...upcomingMoviesRaw()];
     const comparator = makeComparator(sortField(), sortReverse() === "true");
     arr.sort(comparator);
+    const maxPageSize = Number(pageSize());
+    if(maxPageSize > 0)
+    {
+      const skipMovies = maxPageSize * pageNumWatched();
+      return arr.slice(skipMovies, skipMovies + maxPageSize);
+    }
     return arr;
   });
 
@@ -82,6 +102,22 @@ const App = () => {
   const handleSortFieldChange = (val: SortField) => setSortField(val);
   const handleReverseToggle = () =>
     toggleSortReverse((previous) => (previous === "true" ? "false" : "true"));
+
+  createEffect(() => {
+    handleTotalPagesChanged(Number(pageSize()));
+  });
+
+  const handlePageSizeChange = (val: number) => {
+    setPageSize(String(val))
+    setPageNumWatched(0);
+    setPageNumUpcoming(0);
+    handleTotalPagesChanged(val);
+  };
+
+  const handleTotalPagesChanged = (val: number) => {
+    setTotalPagesWatched(val > 0 ? Math.max(0, Math.ceil(watchedMoviesRaw().length / val)) : 0);
+    setTotalPagesUpcoming(val > 0 ? Math.max(0, Math.ceil(upcomingMoviesRaw().length / val)) : 0);
+  }
 
   return (
     <>
@@ -116,6 +152,8 @@ const App = () => {
           onFieldChange={handleSortFieldChange}
           reverse={sortReverse() === "true"}
           onReverseToggle={handleReverseToggle}
+          pageSize={pageSize()}
+          onPageSizeChange={handlePageSizeChange}
         />
 
         <Show when={movieStore.loading && movieStore.movies.length === 0}>
@@ -133,7 +171,14 @@ const App = () => {
               movies={watchedMovies}
               viewType={viewType()}
               onAction={fetchMovies}
-            />
+            >
+              <PaginationControls
+                show={Number(pageSize()) > 0 && totalPagesWatched() > 0}
+                pageNum={pageNumWatched()}
+                totalPages={totalPagesWatched()}
+                onPageChanged={setPageNumWatched}
+              />
+            </MovieSection>
           </Show>
           <Show when={showUpcoming()}>
             <MovieSection
@@ -141,7 +186,14 @@ const App = () => {
               movies={upcomingMovies}
               viewType={viewType()}
               onAction={fetchMovies}
-            />
+            >
+              <PaginationControls
+                show={Number(pageSize()) > 0 && totalPagesUpcoming() > 0}
+                pageNum={pageNumUpcoming()}
+                totalPages={totalPagesUpcoming()}
+                onPageChanged={setPageNumUpcoming}
+              />
+            </MovieSection>
           </Show>
         </Show>
 

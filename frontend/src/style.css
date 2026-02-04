@@ -610,6 +610,18 @@ header {
   border-color: var(--button-active-border);
 }
 
+.page-size-select {
+  @apply py-2 px-3 rounded-lg border-2 bg-(--input-bg) text-sm;
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.page-size-select:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
 /* User filter styling */
 .user-filter-container {
   @apply relative flex-1 min-w-48 max-w-64;
@@ -671,16 +683,63 @@ header {
 }
 
 .user-filter-option {
-  @apply w-full text-left px-4 py-2 text-sm cursor-pointer transition-colors border-none;
+  @apply w-full text-left px-4 py-2 text-sm cursor-pointer transition-colors border-none flex items-center gap-2;
   background-color: transparent;
   color: var(--text-primary);
 }
 
-.user-filter-option:hover {
+.user-filter-option:hover,
+.user-filter-option.highlighted {
   background-color: color-mix(in srgb, var(--button-bg) 10%, var(--card-bg));
 }
 
 .user-filter-option.selected {
   background-color: color-mix(in srgb, var(--button-bg) 20%, var(--card-bg));
   font-weight: 500;
+}
+
+.user-filter-avatar {
+  @apply w-5 h-5 rounded-full object-cover flex-shrink-0;
+}
+
+.user-filter-avatar-placeholder {
+  @apply w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0;
+  background-color: var(--input-border);
+  color: var(--text-secondary);
+}
+
+/* Pagination Style */
+.pagination-controls {
+  @apply flex items-center gap-0 ml-4 justify-center;
+}
+
+.page-button {
+  @apply py-2 px-3 w-10 h-10 border-2 bg-(--input-bg) text-sm;
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.page-button:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+.page-button.active {
+  @apply font-semibold;
+  background-color: var(--button-bg);
+  color: white;
+  border-color: var(--button-active-border);
+}
+
+.page-button-left {
+  @apply rounded-lg;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.page-button-right {
+  @apply rounded-lg;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }

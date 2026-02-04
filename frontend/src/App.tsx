@@ -1,6 +1,6 @@
 import { createMemo, createSignal, Show } from "solid-js";
 import MovieSection from "@/components/MovieSection";
-import Login from "@/components/Login";
+import { Login } from "@/components/Login";
 import { Header } from "@/components/Header";
 import { CategoryButtons } from "@/components/CategoryButtons";
 import { ViewToggle } from "@/components/ViewToggle";
@@ -30,6 +30,13 @@ const App = () => {
 
   const { value: sortReverse, updateWithPrevious: toggleSortReverse } =
     useLocalStorage<"true" | "false">("sort-reverse", "true");
+
+  const { value: pageSize, setValue: setPageSize } = useLocalStorage<string>(
+    "page-size",
+    "0",
+  );
+
+  const maxItemsPerPage = createMemo(() => Number(pageSize()));
 
   const filteredMovies = createMemo(() => {
     const titleQuery = searchQuery().toLowerCase().trim();
@@ -83,6 +90,8 @@ const App = () => {
   const handleReverseToggle = () =>
     toggleSortReverse((previous) => (previous === "true" ? "false" : "true"));
 
+  const handlePageSizeChange = (val: number) => setPageSize(String(val));
+
   return (
     <>
       <Header />
@@ -116,6 +125,8 @@ const App = () => {
           onFieldChange={handleSortFieldChange}
           reverse={sortReverse() === "true"}
           onReverseToggle={handleReverseToggle}
+          pageSize={pageSize()}
+          onPageSizeChange={handlePageSizeChange}
         />
 
         <Show when={movieStore.loading && movieStore.movies.length === 0}>
@@ -133,6 +144,7 @@ const App = () => {
               movies={watchedMovies}
               viewType={viewType()}
               onAction={fetchMovies}
+              itemsPerPage={maxItemsPerPage}
             />
           </Show>
           <Show when={showUpcoming()}>
@@ -141,6 +153,7 @@ const App = () => {
               movies={upcomingMovies}
               viewType={viewType()}
               onAction={fetchMovies}
+              itemsPerPage={maxItemsPerPage}
             />
           </Show>
         </Show>

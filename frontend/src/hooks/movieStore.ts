@@ -29,6 +29,7 @@ export const fetchMovies = async () => {
     data = await api.getMovies();
     setMovies(data);
     return data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     setError(err.message || "Unknown error");
   } finally {

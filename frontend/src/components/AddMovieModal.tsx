@@ -51,6 +51,7 @@ export const AddMovieModal: Component<AddMovieModalProps> = (props) => {
       props.onClose();
       form.reset();
       props.onMovieAdded();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setFormError(err.message || "Error adding movie");
     } finally {

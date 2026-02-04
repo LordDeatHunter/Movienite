@@ -8,7 +8,7 @@ interface LoginProps {
   onLogout: () => void;
 }
 
-const Login = (props: LoginProps) => (
+export const Login = (props: LoginProps) => (
   <div class="login-container">
     <Show when={props.loading}>
       <div class="login-loading">Authenticating...</div>
@@ -56,4 +56,3 @@ const Login = (props: LoginProps) => (
     </Show>
   </div>
 );
-export default Login;

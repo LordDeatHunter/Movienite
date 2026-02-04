@@ -6,6 +6,11 @@ COPY frontend/ ./
 
 RUN bun add -g vite
 RUN bun install --frozen-lockfile
+
+# Fail the build if lint or prettier checks fail
+RUN bun run lint && bun run format:check
+
+# Run the actual build
 RUN bun run build
 
 # Deployment with nginx

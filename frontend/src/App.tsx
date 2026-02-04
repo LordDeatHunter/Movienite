@@ -31,6 +31,11 @@ const App = () => {
   const { value: sortReverse, updateWithPrevious: toggleSortReverse } =
     useLocalStorage<"true" | "false">("sort-reverse", "true");
 
+  const { value: pageSize, setValue: setPageSize } =
+    useLocalStorage<string>("page-size", "0");
+
+  const maxItemsPerPage = createMemo(() => { return Number(pageSize())});
+
   const filteredMovies = createMemo(() => {
     const titleQuery = searchQuery().toLowerCase().trim();
     const username = userFilter().toLowerCase().trim();
@@ -83,6 +88,8 @@ const App = () => {
   const handleReverseToggle = () =>
     toggleSortReverse((previous) => (previous === "true" ? "false" : "true"));
 
+  const handlePageSizeChange = (val: number) => setPageSize(String(val));
+
   return (
     <>
       <Header />
@@ -116,6 +123,8 @@ const App = () => {
           onFieldChange={handleSortFieldChange}
           reverse={sortReverse() === "true"}
           onReverseToggle={handleReverseToggle}
+          pageSize={pageSize()}
+          onPageSizeChange={handlePageSizeChange}
         />
 
         <Show when={movieStore.loading && movieStore.movies.length === 0}>
@@ -133,6 +142,7 @@ const App = () => {
               movies={watchedMovies}
               viewType={viewType()}
               onAction={fetchMovies}
+              itemsPerPage={maxItemsPerPage}
             />
           </Show>
           <Show when={showUpcoming()}>
@@ -141,6 +151,7 @@ const App = () => {
               movies={upcomingMovies}
               viewType={viewType()}
               onAction={fetchMovies}
+              itemsPerPage={maxItemsPerPage}
             />
           </Show>
         </Show>

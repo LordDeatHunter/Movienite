@@ -244,7 +244,7 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
                   <img
                     src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar_url}.png`}
                     class="user-filter-avatar"
-                    alt={user.username}
+                    alt={`${user.username}'s avatar`}
                   />
                 </Show>
                 <span class="user-filter-option-text">{user.username}</span>

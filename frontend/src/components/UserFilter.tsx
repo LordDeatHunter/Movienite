@@ -1,6 +1,14 @@
-import {Component, createMemo, createSignal, For, onCleanup, onMount, Show,} from "solid-js";
-import {FiCheck, FiChevronDown, FiUser, FiX} from "solid-icons/fi";
-import type {Movie} from "@/types";
+import {
+  Component,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
+import { FiCheck, FiChevronDown, FiUser, FiX } from "solid-icons/fi";
+import type { Movie } from "@/types";
 
 interface UserInfo {
   username: string;
@@ -71,9 +79,7 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
   });
 
   const isSelected = (username: string) =>
-      props.value.users.some(
-        (u) => u.toLowerCase() === username.toLowerCase()
-      );
+    props.value.users.some((u) => u.toLowerCase() === username.toLowerCase());
 
   const handleSelect = (username: string) => {
     const isCurrentlySelected = isSelected(username);
@@ -82,7 +88,7 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
       props.onInput({
         ...props.value,
         users: props.value.users.filter(
-          (u) => u.toLowerCase() !== username.toLowerCase()
+          (u) => u.toLowerCase() !== username.toLowerCase(),
         ),
       });
     } else {
@@ -178,10 +184,13 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
             onClick={handleModeToggle}
             title={`Mode: ${props.value.mode === "whitelist" ? "Include" : "Exclude"}`}
           >
-            <span class="user-filter-mode-badge" classList={{
-              "mode-whitelist": props.value.mode === "whitelist",
-              "mode-blacklist": props.value.mode === "blacklist",
-            }}>
+            <span
+              class="user-filter-mode-badge"
+              classList={{
+                "mode-whitelist": props.value.mode === "whitelist",
+                "mode-blacklist": props.value.mode === "blacklist",
+              }}
+            >
               {props.value.mode === "whitelist" ? "✓" : "✗"}
             </span>
           </button>

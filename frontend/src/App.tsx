@@ -63,7 +63,7 @@ const App = () => {
 
     if (titleQuery) {
       movies = movies.filter((m) =>
-        m.title?.toLowerCase().includes(titleQuery)
+        m.title?.toLowerCase().includes(titleQuery),
       );
     }
 

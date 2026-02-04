@@ -79,12 +79,13 @@ html,
 body {
   @apply m-0 p-0 min-h-screen w-full;
   background: linear-gradient(
-          90deg,
-          var(--bg-gradient-end),
-          var(--bg-gradient-start) 20%,
-          var(--bg-gradient-start) 80%,
-          var(--bg-gradient-end)
-  ) no-repeat scroll;
+      90deg,
+      var(--bg-gradient-end),
+      var(--bg-gradient-start) 20%,
+      var(--bg-gradient-start) 80%,
+      var(--bg-gradient-end)
+    )
+    no-repeat scroll;
   background-size: 100% 100%;
   color: var(--text-primary);
 }

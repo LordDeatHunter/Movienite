@@ -7,7 +7,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { FiUser, FiChevronDown, FiX } from "solid-icons/fi";
+import { FiCheck, FiChevronDown, FiUser, FiX } from "solid-icons/fi";
 import type { Movie } from "@/types";
 
 interface UserInfo {
@@ -16,14 +16,22 @@ interface UserInfo {
   discord_id?: string;
 }
 
+export type FilterMode = "whitelist" | "blacklist";
+
+export interface UserFilterValue {
+  users: string[];
+  mode: FilterMode;
+}
+
 interface UserFilterProps {
-  value: string;
-  onInput: (value: string) => void;
+  value: UserFilterValue;
+  onInput: (value: UserFilterValue) => void;
   movies: Movie[];
 }
 
 export const UserFilter: Component<UserFilterProps> = (props) => {
   const [isOpen, setIsOpen] = createSignal(false);
+  const [searchQuery, setSearchQuery] = createSignal("");
   const [highlightedIndex, setHighlightedIndex] = createSignal(-1);
   let containerRef: HTMLDivElement | undefined;
   let inputRef: HTMLInputElement | undefined;
@@ -48,7 +56,7 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
   });
 
   const filteredUsers = createMemo(() => {
-    const query = props.value.toLowerCase().trim();
+    const query = searchQuery().toLowerCase().trim();
     if (!query) return uniqueUsers();
     return uniqueUsers().filter((user) =>
       user.username.toLowerCase().includes(query),
@@ -70,15 +78,42 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
     document.removeEventListener("click", handleClickOutside);
   });
 
+  const isSelected = (username: string) =>
+    props.value.users.some((u) => u.toLowerCase() === username.toLowerCase());
+
   const handleSelect = (username: string) => {
-    props.onInput(username);
-    setIsOpen(false);
+    const isCurrentlySelected = isSelected(username);
+
+    if (isCurrentlySelected) {
+      props.onInput({
+        ...props.value,
+        users: props.value.users.filter(
+          (u) => u.toLowerCase() !== username.toLowerCase(),
+        ),
+      });
+    } else {
+      props.onInput({
+        ...props.value,
+        users: [...props.value.users, username],
+      });
+    }
     setHighlightedIndex(-1);
   };
 
   const handleClear = () => {
-    props.onInput("");
+    props.onInput({
+      ...props.value,
+      users: [],
+    });
+    setSearchQuery("");
     setHighlightedIndex(-1);
+  };
+
+  const handleModeToggle = () => {
+    props.onInput({
+      ...props.value,
+      mode: props.value.mode === "whitelist" ? "blacklist" : "whitelist",
+    });
   };
 
   const handleInputFocus = () => {
@@ -119,6 +154,7 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
     }
   };
 
+  const selectedCount = () => props.value.users.length;
   return (
     <div class="user-filter-container" ref={containerRef}>
       <div class="user-filter-input-wrapper">
@@ -129,16 +165,37 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
           ref={inputRef}
           type="text"
           class="user-filter-input"
-          placeholder="Filter by user"
-          value={props.value}
+          placeholder={
+            selectedCount() > 0
+              ? `${selectedCount()} user${selectedCount() !== 1 ? "s" : ""} selected`
+              : "Filter by user"
+          }
+          value={searchQuery()}
           onInput={(e) => {
-            props.onInput(e.currentTarget.value);
+            setSearchQuery(e.currentTarget.value);
             setHighlightedIndex(-1);
           }}
           onFocus={handleInputFocus}
           onKeyDown={handleKeyDown}
         />
-        <Show when={props.value}>
+        <Show when={selectedCount() > 0}>
+          <button
+            class="user-filter-mode-toggle"
+            onClick={handleModeToggle}
+            title={`Mode: ${props.value.mode === "whitelist" ? "Include" : "Exclude"}`}
+          >
+            <span
+              class="user-filter-mode-badge"
+              classList={{
+                "mode-whitelist": props.value.mode === "whitelist",
+                "mode-blacklist": props.value.mode === "blacklist",
+              }}
+            >
+              {props.value.mode === "whitelist" ? "✓" : "✗"}
+            </span>
+          </button>
+        </Show>
+        <Show when={selectedCount() > 0}>
           <button
             class="user-filter-clear"
             onClick={handleClear}
@@ -171,8 +228,7 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
               <button
                 class="user-filter-option"
                 classList={{
-                  selected:
-                    user.username.toLowerCase() === props.value.toLowerCase(),
+                  selected: isSelected(user.username),
                   highlighted: index() === highlightedIndex(),
                 }}
                 onClick={() => handleSelect(user.username)}
@@ -188,9 +244,13 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
                   <img
                     src={`https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar_url}.png`}
                     class="user-filter-avatar"
+                    alt={`${user.username}'s avatar`}
                   />
                 </Show>
-                <span>{user.username}</span>
+                <span class="user-filter-option-text">{user.username}</span>
+                <Show when={isSelected(user.username)}>
+                  <FiCheck size={16} class="user-filter-option-check" />
+                </Show>
               </button>
             )}
           </For>

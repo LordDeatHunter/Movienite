@@ -7,7 +7,7 @@ import { ViewToggle } from "@/components/ViewToggle";
 import { AddMovieButton } from "@/components/AddMovieButton";
 import { AddMovieModal } from "@/components/AddMovieModal";
 import { SearchInput } from "@/components/SearchInput";
-import { UserFilter } from "@/components/UserFilter";
+import { UserFilter, UserFilterValue } from "@/components/UserFilter";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import movieStore, { fetchMovies } from "@/hooks/movieStore";
 import authStore, { login, logout } from "@/hooks/authStore";
@@ -19,7 +19,10 @@ const App = () => {
   const [showUpcoming, setShowUpcoming] = createSignal(true);
   const [modalOpen, setModalOpen] = createSignal(false);
   const [searchQuery, setSearchQuery] = createSignal("");
-  const [userFilter, setUserFilter] = createSignal("");
+  const [userFilter, setUserFilter] = createSignal<UserFilterValue>({
+    users: [],
+    mode: "whitelist",
+  });
 
   const { value: viewType, setValue: setViewType } = useLocalStorage<
     "list" | "grid"
@@ -40,21 +43,31 @@ const App = () => {
 
   const filteredMovies = createMemo(() => {
     const titleQuery = searchQuery().toLowerCase().trim();
-    const username = userFilter().toLowerCase().trim();
+    const filter = userFilter();
 
-    if (!titleQuery && !username) return movieStore.movies;
+    let movies = movieStore.movies;
 
-    return movieStore.movies.filter((m) => {
-      // Filter by username if specified (partial match)
-      if (username && !m.user?.username?.toLowerCase().includes(username)) {
-        return false;
-      }
-      // Filter by title if there's search text
-      if (titleQuery && !m.title?.toLowerCase().includes(titleQuery)) {
-        return false;
-      }
-      return true;
-    });
+    if (filter.users.length > 0) {
+      const selectedUsersLower = filter.users.map((u) => u.toLowerCase());
+
+      movies = movies.filter((m) => {
+        const movieUsername = m.user?.username?.toLowerCase();
+        if (!movieUsername) {
+          return filter.mode === "blacklist";
+        }
+
+        const isInSelection = selectedUsersLower.includes(movieUsername);
+        return filter.mode === "whitelist" ? isInSelection : !isInSelection;
+      });
+    }
+
+    if (titleQuery) {
+      movies = movies.filter((m) =>
+        m.title?.toLowerCase().includes(titleQuery),
+      );
+    }
+
+    return movies;
   });
 
   const watchedMoviesRaw = createMemo(() =>

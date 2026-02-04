@@ -79,12 +79,14 @@ html,
 body {
   @apply m-0 p-0 min-h-screen w-full;
   background: linear-gradient(
-      135deg,
-      var(--bg-gradient-start),
+      90deg,
+      var(--bg-gradient-end),
+      var(--bg-gradient-start) 20%,
+      var(--bg-gradient-start) 80%,
       var(--bg-gradient-end)
     )
-    no-repeat fixed;
-  background-size: cover;
+    no-repeat scroll;
+  background-size: 100% 100%;
   color: var(--text-primary);
 }
 
@@ -637,7 +639,8 @@ header {
 }
 
 .user-filter-input {
-  @apply w-full py-2 pl-10 pr-16 rounded-lg border-2 text-sm;
+  @apply w-full py-2 pl-10 rounded-lg border-2 text-sm;
+  padding-right: 5.5rem;
   background-color: var(--input-bg);
   border-color: var(--input-border);
   color: var(--text-primary);
@@ -653,8 +656,30 @@ header {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
 }
 
+.user-filter-mode-toggle {
+  @apply absolute flex items-center justify-center p-1 rounded cursor-pointer transition-all;
+  right: 3rem;
+  background: transparent;
+  border: none;
+}
+
+.user-filter-mode-badge {
+  @apply flex items-center justify-center w-5 h-5 rounded text-xs font-bold transition-all;
+}
+
+.user-filter-mode-badge.mode-whitelist {
+  background-color: color-mix(in srgb, #10b981 30%, transparent);
+  color: #10b981;
+}
+
+.user-filter-mode-badge.mode-blacklist {
+  background-color: color-mix(in srgb, #ef4444 30%, transparent);
+  color: #ef4444;
+}
+
 .user-filter-clear {
-  @apply absolute right-9 flex items-center justify-center p-1 rounded cursor-pointer transition-colors;
+  @apply absolute flex items-center justify-center p-1 rounded cursor-pointer transition-colors;
+  right: 4.5rem;
   background: transparent;
   border: none;
   color: var(--text-secondary);
@@ -698,12 +723,21 @@ header {
   font-weight: 500;
 }
 
+.user-filter-option-text {
+  @apply flex-1;
+}
+
+.user-filter-option-check {
+  @apply ml-2;
+  color: var(--button-bg);
+}
+
 .user-filter-avatar {
-  @apply w-5 h-5 rounded-full object-cover flex-shrink-0;
+  @apply w-5 h-5 rounded-full object-cover shrink-0;
 }
 
 .user-filter-avatar-placeholder {
-  @apply w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0;
+  @apply w-5 h-5 rounded-full flex items-center justify-center shrink-0;
   background-color: var(--input-border);
   color: var(--text-secondary);
 }
@@ -714,9 +748,13 @@ header {
 }
 
 .page-button {
-  @apply py-2 px-3 w-10 h-10 border-2 bg-(--input-bg) text-sm;
+  @apply py-2 px-3 w-10 h-10 border bg-(--input-bg) text-sm cursor-pointer transition-all duration-300;
   border-color: var(--input-border);
   color: var(--text-primary);
+}
+
+.page-button:hover {
+  background-color: color-mix(in srgb, var(--button-bg) 25%, var(--input-bg));
 }
 
 .page-button:focus {

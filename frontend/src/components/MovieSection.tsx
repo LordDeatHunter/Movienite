@@ -21,7 +21,7 @@ const MovieSection: Component<MovieSectionProps> = (props) => {
     totalPages,
     goToPage,
     nextPage,
-    previousPage
+    previousPage,
   } = usePagination<Movie>(props.movies, itemsPerPage());
 
   const gridClass = () =>

@@ -1,4 +1,12 @@
-import { Component, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import {
+  Component,
+  createMemo,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import { FiUser, FiChevronDown, FiX } from "solid-icons/fi";
 import type { Movie } from "@/types";
 
@@ -35,15 +43,15 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
       }
     }
     return Array.from(usersMap.values()).sort((a, b) =>
-      a.username.toLowerCase().localeCompare(b.username.toLowerCase())
+      a.toLowerCase().localeCompare(b.toLowerCase()),
     );
   });
 
   const filteredUsers = createMemo(() => {
     const query = props.value.toLowerCase().trim();
     if (!query) return uniqueUsers();
-    return uniqueUsers().filter((user) =>
-      user.username.toLowerCase().includes(query)
+    return uniqueUsers().filter((username) =>
+      username.toLowerCase().includes(query),
     );
   });
 
@@ -91,15 +99,11 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setHighlightedIndex((prev) => 
-          prev < users.length - 1 ? prev + 1 : 0
-        );
+        setHighlightedIndex((prev) => (prev < users.length - 1 ? prev + 1 : 0));
         break;
       case "ArrowUp":
         e.preventDefault();
-        setHighlightedIndex((prev) => 
-          prev > 0 ? prev - 1 : users.length - 1
-        );
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : users.length - 1));
         break;
       case "Enter":
         e.preventDefault();
@@ -163,12 +167,12 @@ export const UserFilter: Component<UserFilterProps> = (props) => {
       <Show when={isOpen() && filteredUsers().length > 0}>
         <div class="user-filter-dropdown">
           <For each={filteredUsers()}>
-            {(user, index) => (
+            {(user) => (
               <button
                 class="user-filter-option"
                 classList={{
-                  selected: user.username.toLowerCase() === props.value.toLowerCase(),
-                  highlighted: index() === highlightedIndex(),
+                  selected:
+                    user.username.toLowerCase() === props.value.toLowerCase(),
                 }}
                 onClick={() => handleSelect(user.username)}
               >

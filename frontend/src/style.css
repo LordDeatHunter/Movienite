@@ -622,7 +622,6 @@ header {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
 }
 
-
 /* User filter styling */
 .user-filter-container {
   @apply relative flex-1 min-w-48 max-w-64;

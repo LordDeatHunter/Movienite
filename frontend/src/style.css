@@ -746,9 +746,13 @@ header {
 }
 
 .page-button {
-  @apply py-2 px-3 w-10 h-10 border-2 bg-(--input-bg) text-sm;
+  @apply py-2 px-3 w-10 h-10 border bg-(--input-bg) text-sm cursor-pointer transition-all duration-300;
   border-color: var(--input-border);
   color: var(--text-primary);
+}
+
+.page-button:hover {
+  background-color: color-mix(in srgb, var(--button-bg) 25%, var(--input-bg));
 }
 
 .page-button:focus {

@@ -37,6 +37,7 @@ export const fetchUser = async () => {
   try {
     userData = await api.getUser();
     setUser(userData);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     setError(err.message || "Failed to load user information");
     setUser(null);

@@ -6,21 +6,19 @@ interface SearchInputProps {
   onInput: (value: string) => void;
 }
 
-export const SearchInput: Component<SearchInputProps> = (props) => {
-  return (
-    <div class="search-container">
-      <div class="search-icon">
-        <FiSearch size={24} />
-      </div>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search movies"
-        value={props.value}
-        onInput={(e) => props.onInput(e.currentTarget.value)}
-      />
+export const SearchInput: Component<SearchInputProps> = (props) => (
+  <div class="search-container">
+    <div class="search-icon">
+      <FiSearch size={24} />
     </div>
-  );
-};
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Search movies"
+      value={props.value}
+      onInput={(e) => props.onInput(e.currentTarget.value)}
+    />
+  </div>
+);
 
 export default SearchInput;

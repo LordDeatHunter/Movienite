@@ -31,10 +31,12 @@ const App = () => {
   const { value: sortReverse, updateWithPrevious: toggleSortReverse } =
     useLocalStorage<"true" | "false">("sort-reverse", "true");
 
-  const { value: pageSize, setValue: setPageSize } =
-    useLocalStorage<string>("page-size", "0");
+  const { value: pageSize, setValue: setPageSize } = useLocalStorage<string>(
+    "page-size",
+    "0",
+  );
 
-  const maxItemsPerPage = createMemo(() => { return Number(pageSize())});
+  const maxItemsPerPage = createMemo(() => Number(pageSize()));
 
   const filteredMovies = createMemo(() => {
     const titleQuery = searchQuery().toLowerCase().trim();

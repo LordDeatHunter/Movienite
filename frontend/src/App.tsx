@@ -1,6 +1,6 @@
 import { createMemo, createSignal, Show } from "solid-js";
 import MovieSection from "@/components/MovieSection";
-import Login from "@/components/Login";
+import { Login } from "@/components/Login";
 import { Header } from "@/components/Header";
 import { CategoryButtons } from "@/components/CategoryButtons";
 import { ViewToggle } from "@/components/ViewToggle";

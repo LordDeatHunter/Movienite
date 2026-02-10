@@ -1,6 +1,7 @@
 import { createStore } from "solid-js/store";
 import { api } from "@/utils/api";
 import type { Movie } from "@/types";
+import { createEffect } from "solid-js";
 
 interface MovieStore {
   movies: Movie[];
@@ -38,6 +39,8 @@ export const fetchMovies = async () => {
   return data;
 };
 
-void fetchMovies();
+createEffect(() => {
+  void fetchMovies();
+});
 
 export default movieStore;

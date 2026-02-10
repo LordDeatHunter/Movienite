@@ -32,7 +32,7 @@ const SortControls: Component<SortControlsProps> = (props) => (
 
     <button
       class={`sort-reverse-btn ${props.reverse ? "active" : ""}`}
-      onClick={props.onReverseToggle}
+      onClick={() => props.onReverseToggle()}
       aria-pressed={props.reverse}
       title={props.reverse ? "Reverse order" : "Normal order"}
     >

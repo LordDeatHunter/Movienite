@@ -21,7 +21,7 @@ export const useTheme = () => {
       }
     };
     systemThemeMedia.addEventListener("change", handler);
-    return () => systemThemeMedia.removeEventListener("change", handler);
+    return systemThemeMedia.removeEventListener("change", handler);
   });
 
   const updateTheme = (newTheme: string) => {

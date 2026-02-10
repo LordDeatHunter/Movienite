@@ -1,5 +1,6 @@
 import { createStore } from "solid-js/store";
 import { api } from "@/utils/api";
+import { createEffect } from "solid-js";
 
 export interface User {
   id: string;
@@ -61,6 +62,8 @@ export const logout = async () => {
   setUser(null);
 };
 
-void fetchUser();
+createEffect(() => {
+  void fetchUser();
+});
 
 export default authStore;

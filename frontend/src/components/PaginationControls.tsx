@@ -12,7 +12,10 @@ interface PaginationControlsProps {
 
 const PaginationControls: Component<PaginationControlsProps> = (props) => (
   <div class="pagination-controls">
-    <button class={`page-button page-button-left`} onClick={props.onPrevious}>
+    <button
+      class={`page-button page-button-left`}
+      onClick={() => props.onPrevious()}
+    >
       <FaSolidCaretLeft />
     </button>
     <For each={range(1, props.totalPages)}>
@@ -25,7 +28,10 @@ const PaginationControls: Component<PaginationControlsProps> = (props) => (
         </button>
       )}
     </For>
-    <button class={`page-button page-button-right`} onClick={props.onNext}>
+    <button
+      class={`page-button page-button-right`}
+      onClick={() => props.onNext()}
+    >
       <FaSolidCaretRight />
     </button>
   </div>

@@ -14,7 +14,7 @@ export const Login = (props: LoginProps) => (
       <div class="login-loading">Authenticating...</div>
     </Show>
     <Show when={!props.loading && !props.user}>
-      <button class="login-button" onClick={props.onLogin}>
+      <button class="login-button" onClick={() => props.onLogin()}>
         <svg
           width="24"
           height="24"
@@ -49,7 +49,7 @@ export const Login = (props: LoginProps) => (
           </Show>
           <span class="user-name">{props.user?.username}</span>
         </div>
-        <button class="logout-button" onClick={props.onLogout}>
+        <button class="logout-button" onClick={() => props.onLogout()}>
           Logout
         </button>
       </div>

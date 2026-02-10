@@ -11,13 +11,13 @@ export const CategoryButtons: Component<CategoryButtonsProps> = (props) => (
   <>
     <button
       class={`category-button${props.showWatched() ? " active" : ""}`}
-      onClick={props.onWatchedToggle}
+      onClick={() => props.onWatchedToggle()}
     >
       Watched
     </button>
     <button
       class={`category-button${props.showUpcoming() ? " active" : ""}`}
-      onClick={props.onUpcomingToggle}
+      onClick={() => props.onUpcomingToggle()}
     >
       Upcoming
     </button>

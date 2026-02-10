@@ -22,7 +22,7 @@ const MovieSection: Component<MovieSectionProps> = (props) => {
     goToPage,
     nextPage,
     previousPage,
-  } = usePagination<Movie>(props.movies, itemsPerPage());
+  } = usePagination<Movie>(() => props.movies(), itemsPerPage());
 
   const gridClass = () =>
     `movie-list${props.viewType === "grid" ? " movie-grid" : ""}`;

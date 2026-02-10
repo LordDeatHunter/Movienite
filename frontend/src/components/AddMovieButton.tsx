@@ -8,7 +8,7 @@ interface AddMovieButtonProps {
 export const AddMovieButton: Component<AddMovieButtonProps> = (props) => (
   <button
     class="add-movie-button"
-    onClick={props.onClick}
+    onClick={() => props.onClick()}
     aria-label="Add Movie"
     title="Add Movie"
   >

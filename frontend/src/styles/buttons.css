@@ -1,0 +1,150 @@
+/* Button Styles */
+.category-button {
+  @apply py-2.5 px-6 text-base rounded-lg font-medium cursor-pointer transition-all duration-200;
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  border: 2px solid var(--border-subtle);
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.category-button:hover {
+  @apply -translate-y-px;
+  border-color: var(--button-bg);
+  color: var(--text-primary);
+  box-shadow: 0 4px 6px var(--card-shadow-hover);
+}
+
+.category-button.active {
+  @apply font-semibold;
+  background-color: var(--button-bg);
+  color: white;
+  border-color: var(--button-active-border);
+  box-shadow: 0 4px 8px color-mix(in srgb, var(--button-bg) 40%, transparent);
+}
+
+.view-toggle-button {
+  @apply py-2.5 px-3.5 text-base rounded-lg cursor-pointer transition-all duration-200;
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  border: 2px solid var(--border-subtle);
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.view-toggle-button:hover {
+  @apply -translate-y-px;
+  border-color: var(--button-bg);
+  color: var(--text-primary);
+  box-shadow: 0 4px 6px var(--card-shadow-hover);
+}
+
+.add-movie-button {
+  @apply fixed bottom-6 right-6 border-none rounded-full w-14 h-14 font-bold cursor-pointer flex justify-center items-center text-center shadow-2xl transition-all duration-200;
+  background-color: var(--button-bg);
+  color: white;
+}
+
+.add-movie-button svg {
+  @apply w-7 h-7;
+}
+
+.add-movie-button:hover {
+  @apply scale-110;
+  background-color: var(--button-hover);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--button-bg) 50%, transparent);
+}
+
+.add-movie-button:active {
+  @apply scale-100;
+}
+
+.submit-button {
+  @apply border-none py-3 px-6 rounded-lg cursor-pointer mt-4 font-semibold transition-all duration-150;
+  background-color: var(--button-bg);
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: var(--button-hover);
+  @apply shadow-lg;
+}
+
+.submit-button:active {
+  background-color: var(--button-active);
+}
+
+.submit-button:disabled {
+  @apply opacity-60 cursor-not-allowed;
+}
+
+.logout-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 border-none cursor-pointer text-sm;
+  background-color: var(--button-bg);
+  color: white;
+}
+
+.logout-button:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px var(--card-shadow);
+}
+
+.logout-button:active {
+  transform: translateY(0);
+  background-color: var(--button-active);
+}
+
+.page-button {
+  @apply py-2 px-3 w-10 h-10 border bg-(--input-bg) text-sm cursor-pointer transition-all duration-300;
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.page-button:hover {
+  background-color: color-mix(in srgb, var(--button-bg) 25%, var(--input-bg));
+}
+
+.page-button:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+.page-button.active {
+  @apply font-semibold;
+  background-color: var(--button-bg);
+  color: white;
+  border-color: var(--button-active-border);
+}
+
+.page-button-left {
+  @apply rounded-lg;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.page-button-right {
+  @apply rounded-lg;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.sort-reverse-btn {
+  @apply px-3 py-2 rounded-lg cursor-pointer transition-all duration-150 border-2;
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  border-color: var(--border-subtle);
+}
+
+.sort-reverse-btn:hover {
+  @apply -translate-y-px;
+  color: var(--text-primary);
+  border-color: var(--button-bg);
+  box-shadow: 0 4px 6px var(--card-shadow-hover);
+}
+
+.sort-reverse-btn.active {
+  @apply font-semibold;
+  background-color: var(--button-bg);
+  color: white;
+  border-color: var(--button-active-border);
+}

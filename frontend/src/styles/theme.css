@@ -1,0 +1,59 @@
+/* Theme Selector Styles */
+.theme-selector {
+  @apply fixed top-6 right-6 z-50;
+}
+
+.theme-toggle-btn {
+  @apply flex items-center gap-2 py-2 px-4 rounded-lg cursor-pointer transition-all duration-200 font-medium;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--border-subtle);
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--button-bg);
+  box-shadow: 0 4px 8px var(--card-shadow-hover);
+}
+
+.theme-icon {
+  @apply w-5 h-5 flex items-center justify-center;
+}
+
+.theme-label {
+  @apply text-sm font-medium;
+}
+
+.theme-chevron {
+  @apply w-4 h-4 transition-transform duration-200;
+}
+
+.theme-chevron.open {
+  @apply rotate-180;
+}
+
+.theme-dropdown {
+  @apply absolute top-full right-0 mt-2 rounded-lg overflow-hidden shadow-xl min-w-36;
+  background-color: var(--card-bg);
+  border: 2px solid var(--border-subtle);
+}
+
+.theme-option {
+  @apply w-full flex items-center gap-3 py-2.5 px-4 border-none cursor-pointer transition-all duration-150 text-left;
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.theme-option:hover {
+  background-color: var(--border-subtle);
+}
+
+.theme-option.active {
+  background-color: var(--button-bg);
+  color: white;
+  font-weight: 600;
+}
+
+.theme-option svg {
+  @apply w-4 h-4;
+}

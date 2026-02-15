@@ -8,6 +8,7 @@ import { AddMovieButton } from "@/components/AddMovieButton";
 import { AddMovieModal } from "@/components/AddMovieModal";
 import { SearchInput } from "@/components/SearchInput";
 import { UserFilter, UserFilterValue } from "@/components/UserFilter";
+import { NSFWFilter, NSFWFilterValue } from "@/components/NSFWFilter";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import movieStore, { fetchMovies } from "@/hooks/movieStore";
 import authStore, { login, logout } from "@/hooks/authStore";
@@ -23,6 +24,9 @@ const App = () => {
     users: [],
     mode: "whitelist",
   });
+  const [nsfwFilter, setNsfwFilter] = createSignal<NSFWFilterValue>(
+    NSFWFilterValue.ALL,
+  );
 
   const { value: viewType, setValue: setViewType } = useLocalStorage<
     "list" | "grid"
@@ -44,6 +48,7 @@ const App = () => {
   const filteredMovies = createMemo(() => {
     const titleQuery = searchQuery().toLowerCase().trim();
     const filter = userFilter();
+    const nsfw = nsfwFilter();
 
     let movies = movieStore.movies;
 
@@ -61,6 +66,12 @@ const App = () => {
       });
     }
 
+    if (nsfw === NSFWFilterValue.NSFW) {
+      movies = movies.filter((m) => m.boobies);
+    } else if (nsfw === NSFWFilterValue.SFW) {
+      movies = movies.filter((m) => !m.boobies);
+    }
+
     if (titleQuery) {
       movies = movies.filter((m) =>
         m.title?.toLowerCase().includes(titleQuery),
@@ -71,10 +82,10 @@ const App = () => {
   });
 
   const watchedMoviesRaw = createMemo(() =>
-    filteredMovies().filter((m) => m.watched === "yes"),
+    filteredMovies().filter((m) => m.watched),
   );
   const upcomingMoviesRaw = createMemo(() =>
-    filteredMovies().filter((m) => m.watched !== "yes"),
+    filteredMovies().filter((m) => !m.watched),
   );
 
   const watchedMovies = createMemo(() => {
@@ -132,6 +143,7 @@ const App = () => {
             onInput={setUserFilter}
             movies={movieStore.movies}
           />
+          <NSFWFilter value={nsfwFilter()} onInput={setNsfwFilter} />
         </div>
         <SortControls
           field={sortField()}

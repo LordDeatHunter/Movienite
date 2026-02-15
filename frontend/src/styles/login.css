@@ -1,0 +1,51 @@
+/* Login Component Styles */
+.login-container {
+  @apply flex justify-center items-center my-8;
+}
+
+.login-loading {
+  @apply text-lg;
+  color: var(--text-secondary);
+}
+
+.login-button {
+  @apply flex items-center gap-3 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 border-none cursor-pointer text-base;
+  background-color: #5865f2;
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+}
+
+.login-button:hover {
+  background-color: #4752c4;
+  box-shadow: 0 6px 16px rgba(88, 101, 242, 0.4);
+  transform: translateY(-2px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(88, 101, 242, 0.3);
+}
+
+.login-button svg {
+  @apply w-6 h-6;
+}
+
+.user-info {
+  @apply flex items-center gap-4 px-5 py-3 rounded-lg;
+  background-color: var(--card-bg);
+  box-shadow: 0 2px 8px var(--card-shadow);
+  border: 2px solid var(--border-subtle);
+}
+
+.user-details {
+  @apply flex items-center gap-3;
+}
+
+.user-avatar {
+  @apply w-10 h-10 rounded-full;
+  border: 2px solid var(--border-subtle);
+}
+
+.user-name {
+  @apply font-semibold text-base;
+  color: var(--text-primary);
+}

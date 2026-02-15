@@ -1,0 +1,49 @@
+/* Modal Styles */
+.modal {
+  @apply fixed top-0 left-0 w-full h-full flex justify-center items-center z-1000;
+  background-color: var(--modal-overlay);
+  backdrop-filter: blur(4px);
+}
+
+.modal.hidden {
+  @apply hidden;
+}
+
+.modal-content {
+  @apply p-8 rounded-2xl w-[90%] max-w-125 relative shadow-2xl;
+  background: var(--modal-bg);
+  border: 1px solid var(--border-subtle);
+}
+
+.modal-content h2 {
+  @apply text-2xl font-semibold mb-4;
+  color: var(--text-primary);
+}
+
+.modal-content label {
+  @apply block mb-2 font-medium;
+  color: var(--text-primary);
+}
+
+.close-button {
+  @apply absolute top-4 right-4 text-3xl cursor-pointer leading-none transition-all duration-150 rounded-lg w-8 h-8 flex items-center justify-center;
+  color: var(--text-secondary);
+}
+
+.close-button:hover {
+  color: var(--text-primary);
+  background-color: var(--border-subtle);
+}
+
+#movie-url {
+  @apply p-3 text-base rounded-lg w-full transition-all duration-150;
+  border: 2px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+}
+
+#movie-url:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 20%, transparent);
+}

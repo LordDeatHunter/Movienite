@@ -1,0 +1,38 @@
+/* Sort Controls */
+.sort-controls {
+  @apply flex items-center gap-3 ml-4 justify-center;
+}
+
+.sort-label {
+  @apply text-sm font-medium;
+  color: var(--text-secondary);
+}
+
+.sort-select {
+  @apply py-2 px-3 rounded-lg border-2 bg-(--input-bg) text-sm;
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.sort-select:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+.page-size-select {
+  @apply py-2 px-3 rounded-lg border-2 bg-(--input-bg) text-sm;
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.page-size-select:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  @apply flex items-center gap-0 ml-4 justify-center;
+}

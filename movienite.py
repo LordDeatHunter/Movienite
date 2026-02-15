@@ -43,8 +43,8 @@ def fetch_imdb(url: str) -> dict | None:
             'image_link': image_link,
             'rating': score,
             'votes': votes,
-            'boobies': 'no',
-            'watched': 'no'
+            'boobies': False,
+            'watched': False
         }
     except:
         return None

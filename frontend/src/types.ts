@@ -9,9 +9,9 @@ export interface Movie {
   rating?: string;
   votes?: string;
   no_reviews?: string;
-  watched?: string; // "yes" or undefined
+  watched: boolean;
   inserted_at?: string | null;
-  boobies?: string; // 'yes' or 'no'
+  boobies: boolean;
   user?: {
     id: string;
     username: string;

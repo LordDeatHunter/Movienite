@@ -45,7 +45,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     }
   };
 
-  const isWatched = () => props.movie.watched === "yes";
+  const isWatched = () => props.movie.watched;
 
   const canToggleWatch = () => !!authStore.user && authStore.user.is_admin;
 
@@ -53,20 +53,14 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return (
-      props.movie.user?.id === authStore.user.id &&
-      props.movie.watched !== "yes"
-    );
+    return props.movie.user?.id === authStore.user.id && !props.movie.watched;
   };
 
   const canToggleBoobies = () => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return (
-      props.movie.user?.id === authStore.user.id &&
-      props.movie.watched !== "yes"
-    );
+    return props.movie.user?.id === authStore.user.id && !props.movie.watched;
   };
 
   const boobiesLabel = (boobies: boolean) =>
@@ -77,7 +71,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
       class="movie-card"
       classList={{
         "grid-card": props.viewType === "grid",
-        "boobies-movie": props.movie.boobies === "yes",
+        "boobies-movie": props.movie.boobies,
       }}
     >
       <div class="movie-image-display">
@@ -135,8 +129,8 @@ const MovieCard: Component<MovieCardProps> = (props) => {
             <Show when={canToggleBoobies()}>
               <button
                 class="movie-action-btn action-nsfw"
-                title={boobiesLabel(props.movie.boobies !== "yes")}
-                aria-label={boobiesLabel(props.movie.boobies === "yes")}
+                title={boobiesLabel(!props.movie.boobies)}
+                aria-label={boobiesLabel(props.movie.boobies)}
                 disabled={actionLoading()}
                 onClick={handleToggleBoobies}
               >

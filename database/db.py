@@ -21,17 +21,6 @@ DB_HOST = os.getenv("POSTGRES_HOST")
 DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
-def parse_bool_like_csv(value) -> bool:
-    if value is None:
-        return False
-    v = str(value).strip().lower()
-    return v in ("1", "true", "t", "yes", "y")
-
-
-def bool_to_csv_str(value: bool) -> str:
-    return 'yes' if value else 'no'
-
-
 def row_to_movie_dict(row: dict) -> dict:
     if row is None:
         return {}
@@ -43,8 +32,8 @@ def row_to_movie_dict(row: dict) -> dict:
         'description': row.get('description') or '',
         'letterboxd_url': row.get('letterboxd_url') or '',
         'imdb_url': row.get('imdb_url') or '',
-        'boobies': bool_to_csv_str(bool(row.get('boobies'))),
-        'watched': bool_to_csv_str(bool(row.get('watched'))),
+        'boobies': bool(row.get('boobies', False)),
+        'watched': bool(row.get('watched', False)),
         'image_link': row.get('image_link') or '',
         'rating': (str(row.get('rating')) if row.get('rating') is not None else ''),
         'votes': row.get('votes') or '',
@@ -104,8 +93,8 @@ def add_movie(movie: dict) -> None:
     if not movie_id:
         raise ValueError('Movie must have an id')
 
-    boobies = parse_bool_like_csv(movie.get('boobies'))
-    watched = parse_bool_like_csv(movie.get('watched'))
+    boobies = bool(movie.get('boobies', False))
+    watched = bool(movie.get('watched', False))
     rating = movie.get('rating')
     try:
         rating_val = float(rating) if (rating is not None and str(rating).strip() != '') else None
@@ -156,8 +145,8 @@ def save_movies(data: dict) -> None:
                 movie_id = movie.get('id')
                 if not movie_id:
                     continue
-                boobies = parse_bool_like_csv(movie.get('boobies'))
-                watched = parse_bool_like_csv(movie.get('watched'))
+                boobies = bool(movie.get('boobies', False))
+                watched = bool(movie.get('watched', False))
                 rating = movie.get('rating')
                 try:
                     rating_val = float(rating) if (rating is not None and str(rating).strip() != '') else None

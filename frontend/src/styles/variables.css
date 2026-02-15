@@ -1,0 +1,62 @@
+/* Theme Variables */
+:root {
+  --bg-gradient-start: #f8fafc;
+  --bg-gradient-end: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #334155;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: rgba(0, 0, 0, 0.12);
+  --input-border: #cbd5e1;
+  --input-bg: #ffffff;
+  --input-focus: #3b82f6;
+  --modal-bg: #ffffff;
+  --modal-overlay: rgba(15, 23, 42, 0.5);
+  --button-bg: #3b82f6;
+  --button-hover: #2563eb;
+  --button-active: #1d4ed8;
+  --button-active-border: #1e40af;
+  --link-color: #3b82f6;
+  --link-hover: #2563eb;
+  --header-text: #0f172a;
+  --section-heading: #1e293b;
+  --empty-message: #94a3b8;
+  --action-btn-color: #475569;
+  --action-btn-hover: #1e293b;
+  --discard-color: #ef4444;
+  --discard-hover: #dc2626;
+  --description-text: #334155;
+  --border-subtle: #e2e8f0;
+}
+
+[data-theme="dark"] {
+  --bg-gradient-start: #0f172a;
+  --bg-gradient-end: #020617;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #cbd5e1;
+  --card-bg: #1e293b;
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: rgba(0, 0, 0, 0.5);
+  --input-border: #475569;
+  --input-bg: #334155;
+  --input-focus: #60a5fa;
+  --modal-bg: #1e293b;
+  --modal-overlay: rgba(0, 0, 0, 0.75);
+  --button-bg: #3b82f6;
+  --button-hover: #2563eb;
+  --button-active: #1d4ed8;
+  --button-active-border: #1e40af;
+  --link-color: #60a5fa;
+  --link-hover: #93c5fd;
+  --header-text: #f1f5f9;
+  --section-heading: #f1f5f9;
+  --empty-message: #64748b;
+  --action-btn-color: #cbd5e1;
+  --action-btn-hover: #f1f5f9;
+  --discard-color: #f87171;
+  --discard-hover: #ef4444;
+  --description-text: #cbd5e1;
+  --border-subtle: #334155;
+}

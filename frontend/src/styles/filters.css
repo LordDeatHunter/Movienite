@@ -1,0 +1,175 @@
+/* Filter Styles */
+.search-filters {
+  @apply flex items-center gap-4 justify-center my-4 mx-auto max-w-3xl px-4 flex-wrap;
+}
+
+.search-container {
+  @apply flex items-center gap-2 flex-1 min-w-64 relative;
+}
+
+.search-icon {
+  @apply absolute left-3 flex items-center pointer-events-none;
+  color: var(--text-secondary);
+}
+
+.search-input {
+  @apply w-full py-2 pl-10 pr-4 rounded-lg border-2 text-sm;
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.search-input:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+/* User Filter */
+.user-filter-container {
+  @apply relative flex-1 min-w-48 max-w-64;
+}
+
+.user-filter-input-wrapper {
+  @apply flex items-center relative;
+}
+
+.user-filter-icon {
+  @apply absolute left-3 flex items-center pointer-events-none;
+  color: var(--text-secondary);
+}
+
+.user-filter-input {
+  @apply w-full py-2 pl-10 rounded-lg border-2 text-sm;
+  padding-right: 5.5rem;
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.user-filter-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.user-filter-input:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+.user-filter-mode-toggle {
+  @apply absolute flex items-center justify-center p-1 rounded cursor-pointer transition-all;
+  right: 3rem;
+  background: transparent;
+  border: none;
+}
+
+.user-filter-mode-badge {
+  @apply flex items-center justify-center w-5 h-5 rounded text-xs font-bold transition-all;
+}
+
+.user-filter-mode-badge.mode-whitelist {
+  background-color: color-mix(in srgb, #10b981 30%, transparent);
+  color: #10b981;
+}
+
+.user-filter-mode-badge.mode-blacklist {
+  background-color: color-mix(in srgb, #ef4444 30%, transparent);
+  color: #ef4444;
+}
+
+.user-filter-clear {
+  @apply absolute flex items-center justify-center p-1 rounded cursor-pointer transition-colors;
+  right: 4.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.user-filter-clear:hover {
+  color: var(--text-primary);
+}
+
+.user-filter-toggle {
+  @apply absolute right-2 flex items-center justify-center p-1 rounded cursor-pointer transition-colors;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+}
+
+.user-filter-toggle:hover {
+  color: var(--text-primary);
+}
+
+.user-filter-dropdown {
+  @apply absolute top-full left-0 right-0 mt-1 rounded-lg border-2 overflow-hidden z-50 max-h-64 overflow-y-auto;
+  background-color: var(--card-bg);
+  border-color: var(--input-border);
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+.user-filter-option {
+  @apply w-full text-left px-4 py-2 text-sm cursor-pointer transition-colors border-none flex items-center gap-2;
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+.user-filter-option:hover,
+.user-filter-option.highlighted {
+  background-color: color-mix(in srgb, var(--button-bg) 10%, var(--card-bg));
+}
+
+.user-filter-option.selected {
+  background-color: color-mix(in srgb, var(--button-bg) 20%, var(--card-bg));
+  font-weight: 500;
+}
+
+.user-filter-option-text {
+  @apply flex-1;
+}
+
+.user-filter-option-check {
+  @apply ml-2;
+  color: var(--button-bg);
+}
+
+.user-filter-avatar {
+  @apply w-5 h-5 rounded-full object-cover shrink-0;
+}
+
+.user-filter-avatar-placeholder {
+  @apply w-5 h-5 rounded-full flex items-center justify-center shrink-0;
+  background-color: var(--input-border);
+  color: var(--text-secondary);
+}
+
+/* NSFW Filter */
+.nsfw-filter {
+  @apply flex items-center gap-2;
+}
+
+.nsfw-filter label {
+  @apply flex items-center gap-2 text-sm font-medium;
+  color: var(--text-secondary);
+}
+
+.nsfw-filter-select {
+  @apply py-2 px-3 rounded-lg border-2 text-sm cursor-pointer;
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.nsfw-filter-select:focus {
+  @apply outline-none;
+  border-color: var(--input-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus) 15%, transparent);
+}
+
+.nsfw-filter-select:hover {
+  border-color: var(--text-secondary);
+}

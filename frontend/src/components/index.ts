@@ -8,3 +8,4 @@ export { MovieRating } from "@/components/MovieRating";
 export { Login } from "@/components/Login";
 export { SearchInput } from "@/components/SearchInput";
 export { UserFilter } from "@/components/UserFilter";
+export { NSFWFilter } from "@/components/NSFWFilter";

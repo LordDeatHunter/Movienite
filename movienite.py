@@ -1,5 +1,4 @@
 import re
-import logging
 from urllib.parse import quote_plus
 
 import requests
@@ -10,8 +9,6 @@ FETCH_HEADER = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     "Accept-Language": "en-US,en;q=0.9"
 }
-
-logger = logging.getLogger("uvicorn.error")
 
 def fetch_imdb(url: str) -> dict | None:
     try:

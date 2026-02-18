@@ -10,12 +10,15 @@ import { SearchInput } from "@/components/SearchInput";
 import { UserFilter, UserFilterValue } from "@/components/UserFilter";
 import { NSFWFilter, NSFWFilterValue } from "@/components/NSFWFilter";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useMovieEvents } from "@/hooks/useMovieEvents";
 import movieStore, { fetchMovies } from "@/hooks/movieStore";
 import authStore, { login, logout } from "@/hooks/authStore";
 import SortControls from "@/components/SortControls";
 import { makeComparator, SortField } from "@/utils/sort";
 
 const App = () => {
+  useMovieEvents();
+
   const [showWatched, setShowWatched] = createSignal(true);
   const [showUpcoming, setShowUpcoming] = createSignal(true);
   const [modalOpen, setModalOpen] = createSignal(false);

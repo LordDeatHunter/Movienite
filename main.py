@@ -1,4 +1,6 @@
+import asyncio
 import datetime
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -8,11 +10,12 @@ import jwt
 import tldextract
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, Cookie
+from fastapi import FastAPI, Cookie, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse, Response
 from jwt import InvalidTokenError
 from pydantic import BaseModel
+from sse_starlette.sse import EventSourceResponse
 
 from data import NewUser
 from database.db import add_movie as _add_movie, get_movies, add_user, get_user_by_mail
@@ -30,12 +33,31 @@ logger = logging.getLogger("uvicorn.error")
 
 VALID_MOVIE_SITES = ['imdb.com', 'letterboxd.com', 'boxd.it']
 
+sse_clients: set[asyncio.Queue] = set()
+
+
+async def broadcast_event(event_type: str, data: dict | None = None):
+    """Send an SSE event to all connected clients."""
+    payload = json.dumps({"type": event_type, **(data or {})})
+    disconnected: list[asyncio.Queue] = []
+    for queue in sse_clients:
+        try:
+            queue.put_nowait(payload)
+        except asyncio.QueueFull:
+            disconnected.append(queue)
+    for q in disconnected:
+        sse_clients.discard(q)
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     logger.info("Application starting up")
     yield
     logger.info("Application shutting down")
+    # Close all SSE connections on shutdown
+    for queue in sse_clients:
+        await queue.put(None)
+    sse_clients.clear()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -126,6 +148,30 @@ async def get_user(session_token: str | None = Cookie(None)):
     return user
 
 
+@app.get("/events")
+async def sse_events(request: Request):
+    queue: asyncio.Queue = asyncio.Queue(maxsize=64)
+    sse_clients.add(queue)
+
+    async def event_generator():
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                try:
+                    payload = await asyncio.wait_for(queue.get(), timeout=30)
+                except asyncio.TimeoutError:
+                    yield {"event": "ping", "data": ""}
+                    continue
+                if payload is None:
+                    break
+                yield {"event": "movie_update", "data": payload}
+        finally:
+            sse_clients.discard(queue)
+
+    return EventSourceResponse(event_generator())
+
+
 @app.get("/movies")
 async def movies():
     return get_movies()
@@ -181,6 +227,7 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
         logger.error(f"Error adding movie: {e}")
         return {"error": "Failed to add movie"}
 
+    await broadcast_event("movie_added", {"movie_id": movie_data.get("id")})
     return {"message": "Movie added successfully"}
 
 
@@ -213,6 +260,7 @@ async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
     if new_watched is None:
         return JSONResponse(status_code=500, content={"error": "Failed to toggle watched"})
 
+    await broadcast_event("movie_watched_toggled", {"movie_id": movie_id, "watched": new_watched})
     return {"message": "Toggled watch status", "watched": new_watched}
 
 
@@ -242,6 +290,7 @@ async def discard_movie(movie_id: str, session_token: str | None = Cookie(None))
         deleted = delete_movie(movie_id)
         if not deleted:
             return JSONResponse(status_code=500, content={"error": "Failed to delete movie"})
+        await broadcast_event("movie_deleted", {"movie_id": movie_id})
         return {"message": "Movie deleted"}
 
     owner_id = movie_row.get('user_id')
@@ -257,6 +306,7 @@ async def discard_movie(movie_id: str, session_token: str | None = Cookie(None))
     if not deleted:
         return JSONResponse(status_code=500, content={"error": "Failed to delete movie"})
 
+    await broadcast_event("movie_deleted", {"movie_id": movie_id})
     return {"message": "Movie deleted"}
 
 
@@ -286,6 +336,7 @@ async def toggle_boobies(movie_id: str, session_token: str | None = Cookie(None)
         new_val = toggle_movie_boobies(movie_id)
         if new_val is None:
             return JSONResponse(status_code=500, content={"error": "Failed to toggle boobies"})
+        await broadcast_event("movie_boobies_toggled", {"movie_id": movie_id, "boobies": new_val})
         return {"message": "Toggled boobies", "boobies": new_val}
 
     owner_id = movie_row.get('user_id')
@@ -301,6 +352,7 @@ async def toggle_boobies(movie_id: str, session_token: str | None = Cookie(None)
     if new_val is None:
         return JSONResponse(status_code=500, content={"error": "Failed to toggle boobies"})
 
+    await broadcast_event("movie_boobies_toggled", {"movie_id": movie_id, "boobies": new_val})
     return {"message": "Toggled boobies", "boobies": new_val}
 
 

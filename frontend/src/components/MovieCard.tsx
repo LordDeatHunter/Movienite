@@ -5,6 +5,7 @@ import authStore from "@/hooks/authStore";
 import { FiEye, FiEyeOff, FiTrash } from "solid-icons/fi";
 import { TbOutlineRating18Plus } from "solid-icons/tb";
 import type { Movie } from "@/types";
+import { MovieStatus } from "@/hooks/movieStore";
 
 interface MovieCardProps {
   movie: Movie;
@@ -45,7 +46,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     }
   };
 
-  const isWatched = () => props.movie.watched;
+  const isWatched = () => props.movie.status === MovieStatus.Watched;
 
   const canToggleWatch = () => !!authStore.user && authStore.user.is_admin;
 
@@ -53,14 +54,14 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === authStore.user.id && !props.movie.watched;
+    return props.movie.user?.id === authStore.user.id && props.movie.status !== MovieStatus.Watched;
   };
 
   const canToggleBoobies = () => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === authStore.user.id && !props.movie.watched;
+    return props.movie.user?.id === authStore.user.id && props.movie.status !== MovieStatus.Watched;
   };
 
   const boobiesLabel = (boobies: boolean) =>

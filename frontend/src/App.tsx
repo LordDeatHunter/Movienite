@@ -11,7 +11,7 @@ import { UserFilter, UserFilterValue } from "@/components/UserFilter";
 import { NSFWFilter, NSFWFilterValue } from "@/components/NSFWFilter";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useMovieEvents } from "@/hooks/useMovieEvents";
-import movieStore, { fetchMovies } from "@/hooks/movieStore";
+import movieStore, { fetchMovies, MovieStatus } from "@/hooks/movieStore";
 import authStore, { login, logout } from "@/hooks/authStore";
 import SortControls from "@/components/SortControls";
 import { makeComparator, SortField } from "@/utils/sort";
@@ -84,12 +84,18 @@ const App = () => {
     return movies;
   });
 
+  const streamingMoviesRaw = createMemo(() =>
+    filteredMovies().filter((m) => m.status === MovieStatus.Streaming),
+  );
+
   const watchedMoviesRaw = createMemo(() =>
-    filteredMovies().filter((m) => m.watched),
+    filteredMovies().filter((m) => m.status === MovieStatus.Watched),
   );
   const upcomingMoviesRaw = createMemo(() =>
-    filteredMovies().filter((m) => !m.watched),
+    filteredMovies().filter((m) => m.status === MovieStatus.Upcoming),
   );
+
+  const streamingMovies = createMemo(() => streamingMoviesRaw());
 
   const watchedMovies = createMemo(() => {
     const arr = [...watchedMoviesRaw()];
@@ -166,6 +172,15 @@ const App = () => {
         </Show>
 
         <Show when={!movieStore.error}>
+          <Show when={streamingMovies().length > 0}>
+            <MovieSection
+              title="Streaming"
+              movies={streamingMovies}
+              viewType={viewType()}
+              onAction={fetchMovies}
+              itemsPerPage={maxItemsPerPage}
+            />
+          </Show>
           <Show when={showWatched()}>
             <MovieSection
               title="Watched"

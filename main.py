@@ -18,8 +18,16 @@ from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
 from data import NewUser
-from database.db import add_movie as _add_movie, get_movies, add_user, get_user_by_mail
-from database.db import get_movie_by_id, delete_movie, toggle_movie_watched, toggle_movie_boobies
+from database.db import (
+    add_movie as _add_movie,
+    get_movies,
+    add_user,
+    get_user_by_mail,
+    get_movie_by_id,
+    delete_movie,
+    toggle_movie_status,
+    toggle_movie_boobies,
+)
 from discord_oauth import get_oauth_url, get_access_token, get_discord_user
 from movienite import fetch_imdb, fetch_letterboxd, fetch_boxd
 
@@ -256,12 +264,12 @@ async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
     if not movie_row:
         return JSONResponse(status_code=404, content={"error": "Movie not found"})
 
-    new_watched = toggle_movie_watched(movie_id)
-    if new_watched is None:
-        return JSONResponse(status_code=500, content={"error": "Failed to toggle watched"})
+    new_status = toggle_movie_status(movie_id)
+    if new_status is None:
+        return JSONResponse(status_code=500, content={"error": "Failed to toggle status"})
 
-    await broadcast_event("movie_watched_toggled", {"movie_id": movie_id, "watched": new_watched})
-    return {"message": "Toggled watch status", "watched": new_watched}
+    await broadcast_event("movie_status_toggled", {"movie_id": movie_id, "status": new_status})
+    return {"message": "Toggled watch status", "status": new_status}
 
 
 @app.post("/movies/{movie_id}/discard")
@@ -294,12 +302,12 @@ async def discard_movie(movie_id: str, session_token: str | None = Cookie(None))
         return {"message": "Movie deleted"}
 
     owner_id = movie_row.get('user_id')
-    watched_flag = bool(movie_row.get('watched'))
+    status = movie_row.get('status', 'upcoming')
 
     if owner_id is None or owner_id != user.get('id'):
         return JSONResponse(status_code=403, content={"error": "You can only delete your own movies"})
 
-    if watched_flag:
+    if status == 'watched':
         return JSONResponse(status_code=403, content={"error": "Cannot delete watched movies"})
 
     deleted = delete_movie(movie_id)
@@ -340,12 +348,12 @@ async def toggle_boobies(movie_id: str, session_token: str | None = Cookie(None)
         return {"message": "Toggled boobies", "boobies": new_val}
 
     owner_id = movie_row.get('user_id')
-    watched_flag = bool(movie_row.get('watched'))
+    status = movie_row.get('status', 'upcoming')
 
     if owner_id is None or owner_id != user.get('id'):
         return JSONResponse(status_code=403, content={"error": "You can only toggle boobies on your own movies"})
 
-    if watched_flag:
+    if status == 'watched':
         return JSONResponse(status_code=403, content={"error": "Cannot modify watched movies"})
 
     new_val = toggle_movie_boobies(movie_id)

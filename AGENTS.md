@@ -6,9 +6,10 @@ This document describes the key agents and services that make up the MovieNite a
 
 MovieNite is a full-stack web application built with:
 - **Backend**: Python FastAPI (port 23245)
-- **Frontend**: React with SolidJS and TypeScript
-- **Database**: PostgreSQL with SQLAlchemy ORM and Alembic migrations
+- **Frontend**: SolidJS with TypeScript
+- **Database**: PostgreSQL with raw psycopg driver and Alembic migrations
 - **Authentication**: Discord OAuth 2.0
+- **Real-Time Updates**: Server-Sent Events (SSE)
 
 ---
 
@@ -53,6 +54,10 @@ MovieNite is a full-stack web application built with:
 - `fetch_imdb(url: str)` - Scrapes IMDb movie pages
   - Extracts: title, original title, description, rating, votes, image link
   - Returns normalized IMDb URL and metadata
+
+- `fetch_letterboxd_url_by_imdb_id(imdb_id: str)` - Resolves an IMDb ID to a Letterboxd URL
+  - Uses Letterboxd's `/imdb/{id}/` redirect endpoint
+  - Called by `fetch_imdb()` to populate the `letterboxd_url` field
 
 - `fetch_letterboxd(url: str)` - Resolves Letterboxd URLs to IMDb matches
   - Extracts movie slug from Letterboxd URL
@@ -100,6 +105,44 @@ MovieNite is a full-stack web application built with:
 - **Authenticated Users**: Add movies, toggle own movie flags
 - **Admins**: Toggle watched status, delete any movie, force-toggle flags
 - **Non-Admin Movie Owners**: Delete own unwatched movies, toggle own movie flags
+
+---
+
+### 4. Real-Time Event Agent (SSE)
+
+**Location**: `main.py`
+
+**Responsibilities**:
+- Maintains a set of connected SSE client queues
+- Broadcasts real-time events to all connected frontend clients
+- Sends keepalive pings every 30 seconds to prevent timeouts
+- Cleans up disconnected clients automatically
+
+**Key Functions**:
+- `broadcast_event(event_type: str, data: dict)` - Sends an SSE event to all connected clients
+
+**API Endpoint**:
+- `GET /events` - SSE stream endpoint; emits `movie_update` events on any movie mutation
+
+**Event Types Broadcast**:
+- `movie_added` - When a new movie is added (includes `movie_id`)
+- `movie_watched_toggled` - When a movie's watched status changes (includes `movie_id`, `watched`)
+- `movie_deleted` - When a movie is deleted (includes `movie_id`)
+- `movie_boobies_toggled` - When a movie's NSFW flag changes (includes `movie_id`, `boobies`)
+
+---
+
+### 5. Data Models Agent
+
+**Location**: `data.py`
+
+**Responsibilities**:
+- Defines Python dataclasses for User and NewUser
+- Provides type-safe data transfer objects between layers
+
+**Key Classes**:
+- `User` - Full user record with `id`, `username`, `avatar_url`, `email`, `discord_id`, `created_at`, `is_admin`
+- `NewUser` - User creation DTO (without `id`); includes `to_user(user_id)` method to convert to `User`
 
 ---
 
@@ -199,7 +242,8 @@ The frontend is composed of modular UI agents (React/SolidJS components):
 - **AddMovieButton** - Trigger for add movie modal
 - **AddMovieModal** - Form for entering movie URLs
 - **SearchInput** - Query/filter input field
-- **UserFilter** - Filter movies by user
+- **UserFilter** - Filter movies by user (supports whitelist/blacklist mode)
+- **NSFWFilter** - Filter movies by NSFW status (All / NSFW / SFW)
 
 #### Controls
 - **CategoryButtons** - Filter by watched/upcoming status
@@ -212,9 +256,35 @@ The frontend is composed of modular UI agents (React/SolidJS components):
 ### 5. Hook Agents (Client-Side)
 
 **Custom Hooks**:
-- `useLocalStorage(key, default)` - Persists UI state to browser storage
-- `usePagination()` - Pagination logic helper
-- `useTheme()` - Theme state management
+- `useLocalStorage(key, default)` - Persists UI state to browser storage; provides `value`, `setValue`, and `updateWithPrevious`
+- `usePagination(items, itemsPerPage)` - Pagination logic helper with `currentPage`, `totalPages`, `goToPage`, `nextPage`, `previousPage`, `reset`
+- `useTheme()` - Theme state management (dark/light/system); responds to system theme changes
+- `useMovieEvents()` - Connects to the backend SSE endpoint (`/api/events`) and automatically refetches movies on `movie_update` events; auto-reconnects on connection loss
+
+---
+
+### 6. Utility Modules (Client-Side)
+
+**Sort Utilities** (`frontend/src/utils/sort.ts`):
+- `SortField` enum: `Date`, `Title`, `User`, `Rating`
+- `PAGE_SIZES` constant: `[5, 10, 20, 50]`
+- Comparator functions: `compareByDate`, `compareByTitle`, `compareByUser`, `compareByRating`
+- `makeComparator(field, reverse)` - Factory for sort comparators
+
+**Rating Utilities** (`frontend/src/utils/rating.ts`):
+- `getStarIconPathBasedOnRating(rating)` - Returns star icon SVG path based on rating thresholds (platinum >= 9, gold >= 7, silver >= 4, bronze < 4)
+
+**Theme Utilities** (`frontend/src/utils/theme.ts`):
+- `getSystemTheme()` - Detects system dark/light preference
+- `applyTheme(theme)` - Applies theme to document element
+
+**Local Storage Utilities** (`frontend/src/utils/localStorage.ts`):
+- `storage.get(key, default)` - Reads from localStorage with fallback
+- `storage.set(key, value)` - Writes to localStorage
+- `storage.remove(key)` - Removes from localStorage
+
+**Pagination Utilities** (`frontend/src/utils/pagination.ts`):
+- `range(start, end)` - Generates integer range array
 
 ---
 
@@ -223,15 +293,22 @@ The frontend is composed of modular UI agents (React/SolidJS components):
 **Location**: `database/db.py`
 
 **Responsibilities**:
-- Direct database interactions via SQLAlchemy
+- Direct database interactions via raw `psycopg` (PostgreSQL driver)
 - User and movie CRUD operations
 - Data persistence and retrieval
+- Row-to-dict conversion with `row_to_movie_dict()`
 
-**Key Operations**:
-- User management (add, get by email, etc.)
-- Movie CRUD operations
-- Movie status toggles (watched, boobies flag)
-- Database transaction handling
+**Key Functions**:
+- `get_movies()` - Returns all movies joined with user info as `{'movies': [...]}`
+- `add_movie(movie: dict)` - Inserts a single movie; raises `ValueError` if duplicate
+- `save_movies(data: dict)` - Bulk upsert movies (used by migration tools)
+- `get_movie_by_id(movie_id)` - Fetches a single movie row (id, user_id, watched)
+- `delete_movie(movie_id)` - Deletes a movie; returns `True`/`False`
+- `toggle_movie_watched(movie_id)` - Toggles watched boolean; returns new value
+- `toggle_movie_boobies(movie_id)` - Toggles boobies boolean; returns new value
+- `add_user(user: NewUser)` - Inserts or updates user (upsert on email); returns `User`
+- `get_user_by_mail(mail: str)` - Retrieves user dict by email
+- `row_to_movie_dict(row: dict)` - Converts a raw DB row to a normalized movie dict
 
 ---
 
@@ -326,7 +403,7 @@ The frontend is composed of modular UI agents (React/SolidJS components):
                  │ SQL
                  ↓
 ┌─────────────────────────────────────────────┐
-│  Data Layer Agent (SQLAlchemy)              │
+│  Data Layer Agent (psycopg)                 │
 ├─────────────────────────────────────────────┤
 │  PostgreSQL Database                        │
 │  ├── users table                            │
@@ -363,10 +440,9 @@ The frontend is composed of modular UI agents (React/SolidJS components):
   imdb_url?: string,
   rating?: string,
   votes?: string,
-  no_reviews?: string,
-  watched?: string, // "yes" or undefined
+  watched: boolean,
   inserted_at?: string | null,
-  boobies?: string, // "yes" or "no"
+  boobies: boolean,
   user?: {
     id: string,
     username: string,
@@ -416,15 +492,21 @@ The frontend is composed of modular UI agents (React/SolidJS components):
 
 ### Backend
 - fastapi >= 0.128.0
-- sqlalchemy >= 2.0.46
-- alembic >= 1.18.1
-- beautifulsoup4 >= 4.14.3
-- requests >= 2.32.5
-- pyjwt >= 2.10.1
 - uvicorn >= 0.40.0
+- psycopg[binary] >= 3.3.2 (PostgreSQL driver)
+- alembic >= 1.18.1 (database migrations)
+- sqlalchemy >= 2.0.46 (used by Alembic for migration generation)
+- beautifulsoup4 >= 4.14.3 (HTML scraping)
+- requests >= 2.32.5 (HTTP client for scraping)
+- httpx >= 0.28.1 (HTTP client for Discord OAuth)
+- pyjwt >= 2.10.1 (JWT tokens)
+- sse-starlette >= 2.2.1 (Server-Sent Events)
+- tldextract >= 5.3.1 (URL domain extraction)
+- python-dotenv >= 1.2.1 (environment variables)
 
 ### Frontend
 - solid-js (reactive framework)
+- solid-icons (icon components)
 - typescript (type safety)
 - tailwindcss (styling)
 - vite (build tool)

@@ -28,6 +28,30 @@
   }
 }
 
+/* Streaming card */
+.streaming-card {
+  animation: streaming-pulse 6s infinite ease-in-out;
+}
+
+.streaming-grid {
+  @apply grid gap-5 p-5;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+@keyframes streaming-pulse {
+  0% {
+    box-shadow: 0px 0px 20px 0px rgba(255, 0, 0, 0.25);
+  }
+
+  50% {
+    box-shadow: 0px 0px 20px 10px rgba(255, 0, 0, 0.35);
+  }
+
+  100% {
+    box-shadow: 0px 0px 20px 0px rgba(255, 0, 0, 0.25);
+  }
+}
+
 /* Grid mode: vertical card layout */
 .grid-card {
   @apply flex-col items-center text-center;

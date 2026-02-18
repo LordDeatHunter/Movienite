@@ -11,6 +11,7 @@ interface MovieCardProps {
   movie: Movie;
   viewType?: "list" | "grid";
   onAction?: () => void;
+  isStreamed?: boolean;
 }
 
 const MovieCard: Component<MovieCardProps> = (props) => {
@@ -69,7 +70,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
 
   return (
     <div
-      class="movie-card"
+      class={`movie-card ${props.isStreamed ? "streaming-card" : ""}`}
       classList={{
         "grid-card": props.viewType === "grid",
         "boobies-movie": props.movie.boobies,

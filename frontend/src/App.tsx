@@ -15,6 +15,7 @@ import movieStore, { fetchMovies, MovieStatus } from "@/hooks/movieStore";
 import authStore, { login, logout } from "@/hooks/authStore";
 import SortControls from "@/components/SortControls";
 import { makeComparator, SortField } from "@/utils/sort";
+import StreamingSection from "./components/StreamingSection";
 
 const App = () => {
   useMovieEvents();
@@ -173,12 +174,10 @@ const App = () => {
 
         <Show when={!movieStore.error}>
           <Show when={streamingMovies().length > 0}>
-            <MovieSection
-              title="Streaming"
+            <StreamingSection
               movies={streamingMovies}
               viewType={viewType()}
               onAction={fetchMovies}
-              itemsPerPage={maxItemsPerPage}
             />
           </Show>
           <Show when={showWatched()}>

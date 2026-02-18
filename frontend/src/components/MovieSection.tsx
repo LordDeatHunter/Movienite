@@ -1,4 +1,4 @@
-import { Accessor, type Component, For, Show } from "solid-js";
+import { Accessor, type Component, createEffect, For, on, Show } from "solid-js";
 import MovieCard from "@/components/MovieCard";
 import type { Movie } from "@/types";
 import { usePagination } from "@/hooks/usePagination";
@@ -22,10 +22,20 @@ const MovieSection: Component<MovieSectionProps> = (props) => {
     goToPage,
     nextPage,
     previousPage,
+    reset,
   } = usePagination<Movie>(props.movies, itemsPerPage());
 
   const gridClass = () =>
     `movie-list${props.viewType === "grid" ? " movie-grid" : ""}`;
+
+  createEffect(
+    on(
+      () => props.movies().length,
+      () => {
+        reset();
+      }
+    )
+  )
 
   return (
     <section class="movie-section">

@@ -1,4 +1,11 @@
-import { Accessor, type Component, createEffect, For, on, Show } from "solid-js";
+import {
+  Accessor,
+  type Component,
+  createEffect,
+  For,
+  on,
+  Show,
+} from "solid-js";
 import MovieCard from "@/components/MovieCard";
 import type { Movie } from "@/types";
 import { usePagination } from "@/hooks/usePagination";
@@ -33,9 +40,9 @@ const MovieSection: Component<MovieSectionProps> = (props) => {
       () => props.movies().length,
       () => {
         reset();
-      }
-    )
-  )
+      },
+    ),
+  );
 
   return (
     <section class="movie-section">

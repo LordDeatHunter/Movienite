@@ -373,37 +373,21 @@ def delete_movie(movie_id: str) -> bool:
             return bool(res)
 
 
-def toggle_movie_status(movie_id: str) -> str | None:
-    """Cycle the status for a movie through the available statuses and return the new status value.
+def set_movie_status(movie_id: str, new_status: str) -> str | None:
+    """Set the status for a movie to a specific value and return the new status value.
     
-    Cycles: upcoming -> streaming -> watched -> upcoming
-    Returns None if the movie was not found.
+    Valid statuses: 'upcoming', 'streaming', 'watched'
+    Returns None if the movie was not found or the status is invalid.
     """
+    if new_status not in ('upcoming', 'streaming', 'watched'):
+        return None
+    
     with psycopg.connect(DB_URL, row_factory=dict_row) as conn:
         with conn.cursor() as cur:
-            # Get current status
-            try:
-                cur.execute('SELECT status FROM movies WHERE id = %s', (movie_id,))
-                row = cur.fetchone()
-                if not row:
-                    return None
-                
-                current_status = row.get('status', 'upcoming')
-            except Exception:
-                # Fallback if status column doesn't exist yet
-                cur.execute('SELECT watched FROM movies WHERE id = %s', (movie_id,))
-                row = cur.fetchone()
-                if not row:
-                    return None
-                current_status = 'watched' if bool(row.get('watched')) else 'upcoming'
-            
-            # Cycle through statuses: upcoming -> streaming -> watched -> upcoming
-            if current_status == 'upcoming':
-                new_status = 'streaming'
-            elif current_status == 'streaming':
-                new_status = 'watched'
-            else:  # watched or any other value
-                new_status = 'upcoming'
+            # Verify the movie exists
+            cur.execute('SELECT id FROM movies WHERE id = %s', (movie_id,))
+            if not cur.fetchone():
+                return None
             
             # Update status column
             try:

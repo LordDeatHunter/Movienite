@@ -25,7 +25,7 @@ from database.db import (
     get_user_by_mail,
     get_movie_by_id,
     delete_movie,
-    toggle_movie_status,
+    set_movie_status,
     toggle_movie_boobies,
 )
 from discord_oauth import get_oauth_url, get_access_token, get_discord_user
@@ -189,6 +189,10 @@ class AddMovieRequest(BaseModel):
     movie_url: str
 
 
+class SetMovieStatusRequest(BaseModel):
+    status: str
+
+
 @app.post("/movies")
 async def add_new_movie(request: AddMovieRequest, session_token: str | None = Cookie(None)):
     movie_url = request.movie_url
@@ -239,8 +243,8 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
     return {"message": "Movie added successfully"}
 
 
-@app.post("/movies/{movie_id}/toggle_watch")
-async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
+@app.post("/movies/{movie_id}/set_status")
+async def set_status(movie_id: str, request: SetMovieStatusRequest, session_token: str | None = Cookie(None)):
     if not session_token:
         return JSONResponse(status_code=401, content={"error": "Not authenticated"})
 
@@ -258,18 +262,18 @@ async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
         return JSONResponse(status_code=404, content={"error": "User not found"})
 
     if not user.get('is_admin'):
-        return JSONResponse(status_code=403, content={"error": "Only admins can toggle watch status"})
+        return JSONResponse(status_code=403, content={"error": "Only admins can set movie status"})
 
     movie_row = get_movie_by_id(movie_id)
     if not movie_row:
         return JSONResponse(status_code=404, content={"error": "Movie not found"})
 
-    new_status = toggle_movie_status(movie_id)
+    new_status = set_movie_status(movie_id, request.status)
     if new_status is None:
-        return JSONResponse(status_code=500, content={"error": "Failed to toggle status"})
+        return JSONResponse(status_code=400, content={"error": "Invalid status value"})
 
-    await broadcast_event("movie_status_toggled", {"movie_id": movie_id, "status": new_status})
-    return {"message": "Toggled watch status", "status": new_status}
+    await broadcast_event("movie_status_set", {"movie_id": movie_id, "status": new_status})
+    return {"message": "Movie status set", "status": new_status}
 
 
 @app.post("/movies/{movie_id}/discard")

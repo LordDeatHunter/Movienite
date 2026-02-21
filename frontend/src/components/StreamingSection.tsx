@@ -1,12 +1,6 @@
-import {
-  Accessor,
-  type Component,
-  For,
-  Show,
-} from "solid-js";
+import { Accessor, type Component, For, Show } from "solid-js";
 import MovieCard from "@/components/MovieCard";
 import type { Movie } from "@/types";
-import { FaSolidVideoCamera } from "solid-icons/fa";
 
 interface StreamingSectionProps {
   movies: Accessor<Movie[]>;
@@ -20,9 +14,7 @@ const StreamingSection: Component<StreamingSectionProps> = (props) => {
 
   return (
     <section class="movie-section">
-      <h2 class="section-heading">
-        Currently streaming
-      </h2>
+      <h2 class="section-heading">Currently streaming</h2>
       <div class={gridClass()}>
         <Show
           when={props.movies().length > 0}

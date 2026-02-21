@@ -50,8 +50,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     }
   };
 
-  const isUserAdmin = () =>
-    !!authStore.user && authStore.user.is_admin;
+  const isUserAdmin = () => !!authStore.user && authStore.user.is_admin;
 
   const canSetMovieStatus = (targetMovieStatus: MovieStatus): boolean =>
     isUserAdmin() && props.movie.status !== targetMovieStatus;
@@ -60,14 +59,20 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === authStore.user.id && props.movie.status !== MovieStatus.Watched;
+    return (
+      props.movie.user?.id === authStore.user.id &&
+      props.movie.status !== MovieStatus.Watched
+    );
   };
 
   const canToggleBoobies = () => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === authStore.user.id && props.movie.status !== MovieStatus.Watched;
+    return (
+      props.movie.user?.id === authStore.user.id &&
+      props.movie.status !== MovieStatus.Watched
+    );
   };
 
   const boobiesLabel = (boobies: boolean) =>

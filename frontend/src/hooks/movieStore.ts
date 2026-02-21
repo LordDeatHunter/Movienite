@@ -5,7 +5,7 @@ import type { Movie } from "@/types";
 export enum MovieStatus {
   Watched = "watched",
   Streaming = "streaming",
-  Upcoming = "upcoming"
+  Upcoming = "upcoming",
 }
 
 interface MovieStore {

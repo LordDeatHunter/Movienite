@@ -176,7 +176,7 @@ const App = () => {
           <Show when={streamingMovies().length > 0}>
             <StreamingSection
               movies={streamingMovies}
-              viewType={viewType()}
+              // viewType={viewType()}
               onAction={fetchMovies}
             />
           </Show>

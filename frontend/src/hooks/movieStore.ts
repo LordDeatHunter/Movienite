@@ -2,6 +2,12 @@ import { createStore } from "solid-js/store";
 import { api } from "@/utils/api";
 import type { Movie } from "@/types";
 
+export enum MovieStatus {
+  Watched = "watched",
+  Streaming = "streaming",
+  Upcoming = "upcoming",
+}
+
 interface MovieStore {
   movies: Movie[];
   loading: boolean;

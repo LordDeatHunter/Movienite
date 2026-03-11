@@ -2,23 +2,30 @@ import { Component, createSignal, Show } from "solid-js";
 import { api } from "@/utils/api";
 import { MovieRating } from "@/components/MovieRating";
 import authStore from "@/hooks/authStore";
-import { FiEye, FiEyeOff, FiTrash } from "solid-icons/fi";
+import { FiCamera, FiEye, FiEyeOff, FiTrash } from "solid-icons/fi";
 import { TbOutlineRating18Plus } from "solid-icons/tb";
 import type { Movie } from "@/types";
+import { MovieStatus } from "@/hooks/movieStore";
 
 interface MovieCardProps {
   movie: Movie;
   viewType?: "list" | "grid";
   onAction?: () => void;
+  isStreamed?: boolean;
 }
 
 const MovieCard: Component<MovieCardProps> = (props) => {
   const [actionLoading, setActionLoading] = createSignal(false);
 
-  const handleWatchToggle = async () => {
+  const movieIconsClass = () =>
+    isUserAdmin() && props.viewType === "grid"
+      ? "movie-icons-col"
+      : "movie-icons";
+
+  const handleSetStatus = async (targetStatus: MovieStatus) => {
     setActionLoading(true);
     try {
-      await api.toggleWatch(props.movie.id);
+      await api.setMovieStatus(props.movie.id, targetStatus);
       props.onAction?.();
     } finally {
       setActionLoading(false);
@@ -45,22 +52,29 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     }
   };
 
-  const isWatched = () => props.movie.watched;
+  const isUserAdmin = () => !!authStore.user && authStore.user.is_admin;
 
-  const canToggleWatch = () => !!authStore.user && authStore.user.is_admin;
+  const canSetMovieStatus = (targetMovieStatus: MovieStatus): boolean =>
+    isUserAdmin() && props.movie.status !== targetMovieStatus;
 
   const canDiscard = () => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === authStore.user.id && !props.movie.watched;
+    return (
+      props.movie.user?.id === authStore.user.id &&
+      props.movie.status !== MovieStatus.Watched
+    );
   };
 
   const canToggleBoobies = () => {
     if (!authStore.user) return false;
     if (authStore.user.is_admin) return true;
 
-    return props.movie.user?.id === authStore.user.id && !props.movie.watched;
+    return (
+      props.movie.user?.id === authStore.user.id &&
+      props.movie.status !== MovieStatus.Watched
+    );
   };
 
   const boobiesLabel = (boobies: boolean) =>
@@ -68,7 +82,7 @@ const MovieCard: Component<MovieCardProps> = (props) => {
 
   return (
     <div
-      class="movie-card"
+      class={`movie-card ${props.isStreamed ? "streaming-card" : ""}`}
       classList={{
         "grid-card": props.viewType === "grid",
         "boobies-movie": props.movie.boobies,
@@ -112,17 +126,41 @@ const MovieCard: Component<MovieCardProps> = (props) => {
       <Show
         when={props.movie.rating || props.movie.votes || props.movie.no_reviews}
       >
-        <div class="movie-icons">
+        <div class={movieIconsClass()}>
           <div class="movie-actions">
-            <Show when={canToggleWatch()}>
+            <Show when={canSetMovieStatus(MovieStatus.Watched)}>
               <button
                 class="movie-action-btn action-watch"
-                title={isWatched() ? "Unwatch" : "Watch"}
-                aria-label={isWatched() ? "Unwatch" : "Watch"}
+                title="Watch"
+                aria-label="Watch"
                 disabled={actionLoading()}
-                onClick={handleWatchToggle}
+                onClick={() => handleSetStatus(MovieStatus.Watched)}
               >
-                {isWatched() ? <FiEyeOff /> : <FiEye />}
+                {<FiEye />}
+              </button>
+            </Show>
+
+            <Show when={canSetMovieStatus(MovieStatus.Upcoming)}>
+              <button
+                class="movie-action-btn action-watch"
+                title="Unwatch"
+                aria-label="Unwatch"
+                disabled={actionLoading()}
+                onClick={() => handleSetStatus(MovieStatus.Upcoming)}
+              >
+                {<FiEyeOff />}
+              </button>
+            </Show>
+
+            <Show when={canSetMovieStatus(MovieStatus.Streaming)}>
+              <button
+                class="movie-action-btn action-watch"
+                title="Streaming"
+                aria-label="Streaming"
+                disabled={actionLoading()}
+                onClick={() => handleSetStatus(MovieStatus.Streaming)}
+              >
+                {<FiCamera />}
               </button>
             </Show>
 

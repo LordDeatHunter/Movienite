@@ -19,7 +19,12 @@ from sse_starlette.sse import EventSourceResponse
 
 from data import NewUser
 from database.db import add_movie as _add_movie, get_movies, add_user, get_user_by_mail
-from database.db import get_movie_by_id, delete_movie, toggle_movie_watched, toggle_movie_boobies
+from database.db import (
+    get_movie_by_id,
+    delete_movie,
+    toggle_movie_watched,
+    toggle_movie_boobies,
+)
 from discord_oauth import get_oauth_url, get_access_token, get_discord_user
 from movienite import fetch_imdb, fetch_letterboxd, fetch_boxd
 
@@ -31,7 +36,7 @@ JWT_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 logger = logging.getLogger("uvicorn.error")
 
-VALID_MOVIE_SITES = ['imdb.com', 'letterboxd.com', 'boxd.it']
+VALID_MOVIE_SITES = ["imdb.com", "letterboxd.com", "boxd.it"]
 
 sse_clients: set[asyncio.Queue] = set()
 
@@ -63,13 +68,16 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-def create_session_jwt(*, discord_access_token: str, discord_refresh_token: str, email: str) -> str:
+def create_session_jwt(
+    *, discord_access_token: str, discord_refresh_token: str, email: str
+) -> str:
     payload = {
         "sub": "discord_session",
         "email": email,
         "discord_access_token": discord_access_token,
         "discord_refresh_token": discord_refresh_token,
-        "exp": datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=JWT_EXPIRE_MINUTES),
+        "exp": datetime.datetime.now(datetime.UTC)
+        + datetime.timedelta(minutes=JWT_EXPIRE_MINUTES),
     }
 
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -90,16 +98,33 @@ async def logout(response: Response):
 
 
 @app.get("/callback")
-async def callback(code: str):
-    discord_access_token, discord_refresh_token = get_access_token(code)
+async def callback(
+    code: str | None = None,
+    error: str | None = None,
+    error_description: str | None = None,
+):
+    if error:
+        logger.warning(f"Discord OAuth failed: {error} ({error_description})")
+        return RedirectResponse(url="/?auth_error=oauth_failed")
 
-    discord_user_info = get_discord_user(discord_access_token)
-    email = discord_user_info['email']
+    if not code:
+        logger.warning("Discord callback received without code")
+        return RedirectResponse(url="/?auth_error=missing_code")
+
+    try:
+        discord_access_token, discord_refresh_token = get_access_token(code)
+        discord_user_info = get_discord_user(discord_access_token)
+        email = discord_user_info.get("email")
+        if not email:
+            raise ValueError("Email missing in Discord profile")
+    except Exception as e:
+        logger.error(f"Discord callback processing failed: {e}")
+        return RedirectResponse(url="/?auth_error=callback_failed")
 
     session_jwt = create_session_jwt(
         discord_access_token=discord_access_token,
         discord_refresh_token=discord_refresh_token,
-        email=email
+        email=email,
     )
 
     response = RedirectResponse(url="/")
@@ -112,12 +137,12 @@ async def callback(code: str):
     )
 
     user = NewUser(
-        username=discord_user_info['username'],
-        avatar_url=discord_user_info['avatar'],
+        username=discord_user_info["username"],
+        avatar_url=discord_user_info["avatar"],
         email=email,
-        discord_id=discord_user_info['id'],
+        discord_id=discord_user_info["id"],
         created_at=datetime.datetime.now(datetime.UTC),
-        is_admin=False
+        is_admin=False,
     )
 
     add_user(user)
@@ -133,7 +158,7 @@ async def get_user(session_token: str | None = Cookie(None)):
 
     try:
         payload = decode_session_jwt(session_token)
-        email = payload['email']
+        email = payload["email"]
         if not email:
             raise ValueError("Email not found in token")
     except (InvalidTokenError, ValueError) as e:
@@ -182,7 +207,9 @@ class AddMovieRequest(BaseModel):
 
 
 @app.post("/movies")
-async def add_new_movie(request: AddMovieRequest, session_token: str | None = Cookie(None)):
+async def add_new_movie(
+    request: AddMovieRequest, session_token: str | None = Cookie(None)
+):
     movie_url = request.movie_url
     if not movie_url.startswith("http://") and not movie_url.startswith("https://"):
         logger.warning("URL missing scheme, adding https://")
@@ -213,11 +240,11 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
     if session_token:
         try:
             payload = decode_session_jwt(session_token)
-            email = payload.get('email')
+            email = payload.get("email")
             if email:
                 user_row = get_user_by_mail(email)
-                if user_row and user_row.get('id'):
-                    movie_data['user_id'] = user_row.get('id')
+                if user_row and user_row.get("id"):
+                    movie_data["user_id"] = user_row.get("id")
         except Exception as e:
             logger.debug(f"Could not attach user to movie: {e}")
 
@@ -238,9 +265,9 @@ async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
 
     try:
         payload = decode_session_jwt(session_token)
-        email = payload.get('email')
+        email = payload.get("email")
         if not email:
-            raise ValueError('Email not in token')
+            raise ValueError("Email not in token")
     except Exception as e:
         logger.error(f"Invalid session token: {e}")
         return JSONResponse(status_code=401, content={"error": "Invalid session"})
@@ -249,8 +276,10 @@ async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
     if not user:
         return JSONResponse(status_code=404, content={"error": "User not found"})
 
-    if not user.get('is_admin'):
-        return JSONResponse(status_code=403, content={"error": "Only admins can toggle watch status"})
+    if not user.get("is_admin"):
+        return JSONResponse(
+            status_code=403, content={"error": "Only admins can toggle watch status"}
+        )
 
     movie_row = get_movie_by_id(movie_id)
     if not movie_row:
@@ -258,9 +287,13 @@ async def toggle_watch(movie_id: str, session_token: str | None = Cookie(None)):
 
     new_watched = toggle_movie_watched(movie_id)
     if new_watched is None:
-        return JSONResponse(status_code=500, content={"error": "Failed to toggle watched"})
+        return JSONResponse(
+            status_code=500, content={"error": "Failed to toggle watched"}
+        )
 
-    await broadcast_event("movie_watched_toggled", {"movie_id": movie_id, "watched": new_watched})
+    await broadcast_event(
+        "movie_watched_toggled", {"movie_id": movie_id, "watched": new_watched}
+    )
     return {"message": "Toggled watch status", "watched": new_watched}
 
 
@@ -271,9 +304,9 @@ async def discard_movie(movie_id: str, session_token: str | None = Cookie(None))
 
     try:
         payload = decode_session_jwt(session_token)
-        email = payload.get('email')
+        email = payload.get("email")
         if not email:
-            raise ValueError('Email not in token')
+            raise ValueError("Email not in token")
     except Exception as e:
         logger.error(f"Invalid session token: {e}")
         return JSONResponse(status_code=401, content={"error": "Invalid session"})
@@ -286,25 +319,33 @@ async def discard_movie(movie_id: str, session_token: str | None = Cookie(None))
     if not movie_row:
         return JSONResponse(status_code=404, content={"error": "Movie not found"})
 
-    if user.get('is_admin'):
+    if user.get("is_admin"):
         deleted = delete_movie(movie_id)
         if not deleted:
-            return JSONResponse(status_code=500, content={"error": "Failed to delete movie"})
+            return JSONResponse(
+                status_code=500, content={"error": "Failed to delete movie"}
+            )
         await broadcast_event("movie_deleted", {"movie_id": movie_id})
         return {"message": "Movie deleted"}
 
-    owner_id = movie_row.get('user_id')
-    watched_flag = bool(movie_row.get('watched'))
+    owner_id = movie_row.get("user_id")
+    watched_flag = bool(movie_row.get("watched"))
 
-    if owner_id is None or owner_id != user.get('id'):
-        return JSONResponse(status_code=403, content={"error": "You can only delete your own movies"})
+    if owner_id is None or owner_id != user.get("id"):
+        return JSONResponse(
+            status_code=403, content={"error": "You can only delete your own movies"}
+        )
 
     if watched_flag:
-        return JSONResponse(status_code=403, content={"error": "Cannot delete watched movies"})
+        return JSONResponse(
+            status_code=403, content={"error": "Cannot delete watched movies"}
+        )
 
     deleted = delete_movie(movie_id)
     if not deleted:
-        return JSONResponse(status_code=500, content={"error": "Failed to delete movie"})
+        return JSONResponse(
+            status_code=500, content={"error": "Failed to delete movie"}
+        )
 
     await broadcast_event("movie_deleted", {"movie_id": movie_id})
     return {"message": "Movie deleted"}
@@ -317,9 +358,9 @@ async def toggle_boobies(movie_id: str, session_token: str | None = Cookie(None)
 
     try:
         payload = decode_session_jwt(session_token)
-        email = payload.get('email')
+        email = payload.get("email")
         if not email:
-            raise ValueError('Email not in token')
+            raise ValueError("Email not in token")
     except Exception as e:
         logger.error(f"Invalid session token: {e}")
         return JSONResponse(status_code=401, content={"error": "Invalid session"})
@@ -332,27 +373,40 @@ async def toggle_boobies(movie_id: str, session_token: str | None = Cookie(None)
     if not movie_row:
         return JSONResponse(status_code=404, content={"error": "Movie not found"})
 
-    if user.get('is_admin'):
+    if user.get("is_admin"):
         new_val = toggle_movie_boobies(movie_id)
         if new_val is None:
-            return JSONResponse(status_code=500, content={"error": "Failed to toggle boobies"})
-        await broadcast_event("movie_boobies_toggled", {"movie_id": movie_id, "boobies": new_val})
+            return JSONResponse(
+                status_code=500, content={"error": "Failed to toggle boobies"}
+            )
+        await broadcast_event(
+            "movie_boobies_toggled", {"movie_id": movie_id, "boobies": new_val}
+        )
         return {"message": "Toggled boobies", "boobies": new_val}
 
-    owner_id = movie_row.get('user_id')
-    watched_flag = bool(movie_row.get('watched'))
+    owner_id = movie_row.get("user_id")
+    watched_flag = bool(movie_row.get("watched"))
 
-    if owner_id is None or owner_id != user.get('id'):
-        return JSONResponse(status_code=403, content={"error": "You can only toggle boobies on your own movies"})
+    if owner_id is None or owner_id != user.get("id"):
+        return JSONResponse(
+            status_code=403,
+            content={"error": "You can only toggle boobies on your own movies"},
+        )
 
     if watched_flag:
-        return JSONResponse(status_code=403, content={"error": "Cannot modify watched movies"})
+        return JSONResponse(
+            status_code=403, content={"error": "Cannot modify watched movies"}
+        )
 
     new_val = toggle_movie_boobies(movie_id)
     if new_val is None:
-        return JSONResponse(status_code=500, content={"error": "Failed to toggle boobies"})
+        return JSONResponse(
+            status_code=500, content={"error": "Failed to toggle boobies"}
+        )
 
-    await broadcast_event("movie_boobies_toggled", {"movie_id": movie_id, "boobies": new_val})
+    await broadcast_event(
+        "movie_boobies_toggled", {"movie_id": movie_id, "boobies": new_val}
+    )
     return {"message": "Toggled boobies", "boobies": new_val}
 
 

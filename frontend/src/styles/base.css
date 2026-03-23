@@ -24,6 +24,28 @@ body {
   color: var(--text-primary);
 }
 
+* {
+  scrollbar-color: var(--text-secondary) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--text-secondary) 55%, transparent);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 .header-title {
   @apply text-center my-8 mx-0 text-5xl font-bold tracking-tight;
   color: var(--header-text);

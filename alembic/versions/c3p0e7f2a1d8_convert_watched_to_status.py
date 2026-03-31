@@ -38,8 +38,19 @@ def upgrade() -> None:
     
     # Add constraint to ensure valid status values
     op.execute("""
-        ALTER TABLE movies
-        ADD CONSTRAINT IF NOT EXISTS status_check CHECK (status IN ('watched', 'upcoming', 'streaming'))
+        DO $$
+        BEGIN
+            IF NOT EXISTS (
+                SELECT 1
+                FROM pg_constraint
+                WHERE conname = 'status_check'
+                  AND conrelid = 'movies'::regclass
+            ) THEN
+                ALTER TABLE movies
+                ADD CONSTRAINT status_check CHECK (status IN ('watched', 'upcoming', 'streaming'));
+            END IF;
+        END
+        $$;
     """)
     
     # Create new index on status column

@@ -63,13 +63,6 @@ def downgrade() -> None:
         ALTER TABLE movies
         DROP COLUMN IF EXISTS status
     """)
-
-    
-    # Drop status column
-    op.execute("""
-        ALTER TABLE movies
-        DROP COLUMN status
-    """)
     
     # Recreate old index
     op.execute("""

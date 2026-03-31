@@ -30,10 +30,7 @@ def row_to_movie_dict(row: dict) -> dict:
     if not status:
         # Fallback: convert watched boolean to status if status column doesn't exist yet
         watched_value = row.get('watched')
-        if isinstance(watched_value, str):
-            status = watched_value
-        else:
-            status = 'watched' if bool(watched_value) else 'upcoming'
+        status = 'watched' if bool(watched_value) else 'upcoming'
 
     movie = {
         'id': row.get('id'),

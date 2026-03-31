@@ -33,7 +33,6 @@ def upgrade() -> None:
             WHEN watched = FALSE THEN 'upcoming'
             ELSE 'upcoming'
         END
-        WHERE status = 'upcoming'
     """)
     
     # Add constraint to ensure valid status values

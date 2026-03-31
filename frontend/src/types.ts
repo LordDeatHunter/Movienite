@@ -9,7 +9,7 @@ export interface Movie {
   rating?: string;
   votes?: string;
   no_reviews?: string;
-  watched: boolean;
+  status: "watched" | "upcoming" | "streaming";
   inserted_at?: string | null;
   boobies: boolean;
   user?: {

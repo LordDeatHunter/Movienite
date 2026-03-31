@@ -1,4 +1,5 @@
 import type { User } from "@/hooks/authStore";
+import { MovieStatus } from "@/hooks/movieStore";
 import type { Movie } from "@/types";
 
 export const api = {
@@ -51,12 +52,14 @@ export const api = {
     return response.json();
   },
 
-  async toggleWatch(movieId: string) {
-    const response = await fetch(`/api/movies/${movieId}/toggle_watch`, {
+  async setMovieStatus(movieId: string, status: MovieStatus) {
+    const response = await fetch(`/api/movies/${movieId}/set_status`, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
     });
     if (!response.ok) {
-      throw new Error("Failed to toggle watch status");
+      throw new Error("Failed to set movie status");
     }
     return response.json();
   },

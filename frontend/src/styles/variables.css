@@ -28,6 +28,9 @@
   --discard-hover: #dc2626;
   --description-text: #334155;
   --border-subtle: #e2e8f0;
+  --alert-error-bg: #fee2e2;
+  --alert-error-text: #7f1d1d;
+  --alert-error-border: #fecaca;
 }
 
 [data-theme="dark"] {
@@ -59,4 +62,7 @@
   --discard-hover: #ef4444;
   --description-text: #cbd5e1;
   --border-subtle: #334155;
+  --alert-error-bg: #7f1d1d;
+  --alert-error-text: #fee2e2;
+  --alert-error-border: #b91c1c;
 }

@@ -1,5 +1,6 @@
 import { createStore } from "solid-js/store";
 import { api } from "@/utils/api";
+import { showErrorAlert } from "@/hooks/errorAlertStore";
 
 export interface User {
   id: string;
@@ -39,7 +40,11 @@ export const fetchUser = async () => {
     setUser(userData);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    setError(err.message || "Failed to load user information");
+    const message = err.message || "Failed to load user information";
+    setError(message);
+    if (message !== "Not authenticated") {
+      showErrorAlert(message);
+    }
     setUser(null);
   } finally {
     setLoading(false);
@@ -52,13 +57,21 @@ export const login = async () => {
     window.location.href = url;
   } catch (err) {
     console.error("Failed to get login URL:", err);
-    setError("Failed to initiate login");
+    const message = err instanceof Error ? err.message : "Failed to initiate login";
+    setError(message);
+    showErrorAlert(message);
   }
 };
 
 export const logout = async () => {
-  await api.logout();
-  setUser(null);
+  try {
+    await api.logout();
+    setUser(null);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Failed to logout";
+    setError(message);
+    showErrorAlert(message);
+  }
 };
 
 void fetchUser();

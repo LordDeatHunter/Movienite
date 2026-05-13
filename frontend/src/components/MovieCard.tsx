@@ -2,6 +2,7 @@ import { Component, createSignal, Show } from "solid-js";
 import { api } from "@/utils/api";
 import { MovieRating } from "@/components/MovieRating";
 import authStore from "@/hooks/authStore";
+import { showErrorAlert } from "@/hooks/errorAlertStore";
 import { FiEye, FiEyeOff, FiTrash } from "solid-icons/fi";
 import { TbOutlineRating18Plus } from "solid-icons/tb";
 import type { Movie } from "@/types";
@@ -20,6 +21,10 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     try {
       await api.toggleWatch(props.movie.id);
       props.onAction?.();
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to toggle watch status";
+      showErrorAlert(message);
     } finally {
       setActionLoading(false);
     }
@@ -30,6 +35,9 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     try {
       await api.discardMovie(props.movie.id);
       props.onAction?.();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to discard movie";
+      showErrorAlert(message);
     } finally {
       setActionLoading(false);
     }
@@ -40,6 +48,9 @@ const MovieCard: Component<MovieCardProps> = (props) => {
     try {
       await api.toggleBoobies(props.movie.id);
       props.onAction?.();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to toggle boobies";
+      showErrorAlert(message);
     } finally {
       setActionLoading(false);
     }

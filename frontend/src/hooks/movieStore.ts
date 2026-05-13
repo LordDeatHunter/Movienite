@@ -1,6 +1,7 @@
 import { createStore } from "solid-js/store";
 import { api } from "@/utils/api";
 import type { Movie } from "@/types";
+import { showErrorAlert } from "@/hooks/errorAlertStore";
 
 interface MovieStore {
   movies: Movie[];
@@ -31,7 +32,9 @@ export const fetchMovies = async () => {
     return data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
-    setError(err.message || "Unknown error");
+    const message = err.message || "Unknown error";
+    setError(message);
+    showErrorAlert(message);
   } finally {
     setLoading(false);
   }

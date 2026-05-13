@@ -1,5 +1,6 @@
 import { type Component, createEffect, createSignal, Show } from "solid-js";
 import { api } from "@/utils/api";
+import { showErrorAlert } from "@/hooks/errorAlertStore";
 
 interface AddMovieModalProps {
   isOpen: boolean;
@@ -9,7 +10,6 @@ interface AddMovieModalProps {
 
 export const AddMovieModal: Component<AddMovieModalProps> = (props) => {
   const [formLoading, setFormLoading] = createSignal(false);
-  const [formError, setFormError] = createSignal<string | null>(null);
 
   createEffect(() => {
     if (props.isOpen) {
@@ -34,14 +34,13 @@ export const AddMovieModal: Component<AddMovieModalProps> = (props) => {
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
     setFormLoading(true);
-    setFormError(null);
 
     const form = e.target as HTMLFormElement;
     const urlInput = form.querySelector<HTMLInputElement>("#movie-url");
     const movieUrl = urlInput?.value;
 
     if (!movieUrl) {
-      setFormError("Please enter a valid URL.");
+      showErrorAlert("Please enter a valid URL.");
       setFormLoading(false);
       return;
     }
@@ -53,16 +52,14 @@ export const AddMovieModal: Component<AddMovieModalProps> = (props) => {
       props.onMovieAdded();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setFormError(err.message || "Error adding movie");
+      const message = err.message || "Error adding movie";
+      showErrorAlert(message);
     } finally {
       setFormLoading(false);
     }
   };
 
-  const handleClose = () => {
-    setFormError(null);
-    props.onClose();
-  };
+  const handleClose = () => props.onClose();
 
   return (
     <Show when={props.isOpen}>
@@ -94,9 +91,6 @@ export const AddMovieModal: Component<AddMovieModalProps> = (props) => {
             >
               {formLoading() ? "Submitting..." : "Submit"}
             </button>
-            <Show when={formError()}>
-              <p class="empty-message">{formError()}</p>
-            </Show>
           </form>
         </div>
       </div>

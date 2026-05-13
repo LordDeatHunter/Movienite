@@ -1,0 +1,21 @@
+.error-alert {
+  @apply fixed top-5 right-5 rounded-lg px-4 py-3 max-w-96 z-1200 shadow-xl;
+  background-color: var(--alert-error-bg);
+  color: var(--alert-error-text);
+  border: 1px solid var(--alert-error-border);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 250ms ease, transform 250ms ease;
+}
+
+.error-alert-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .error-alert {
+    @apply left-4 right-4 top-4 max-w-none;
+  }
+}

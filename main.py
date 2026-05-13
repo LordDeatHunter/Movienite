@@ -21,7 +21,7 @@ from data import NewUser
 from database.db import add_movie as _add_movie, get_movies, add_user, get_user_by_mail
 from database.db import get_movie_by_id, delete_movie, toggle_movie_watched, toggle_movie_boobies
 from discord_oauth import get_oauth_url, get_access_token, get_discord_user
-from movienite import fetch_imdb, fetch_letterboxd, fetch_boxd
+from movienite import MovieFetchError, fetch_imdb, fetch_letterboxd, fetch_boxd
 
 load_dotenv()
 
@@ -61,6 +61,16 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+def error_response(message: str, status_code: int) -> JSONResponse:
+    return JSONResponse(status_code=status_code, content={"error": message})
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    logger.exception("Unhandled server error on %s %s", request.method, request.url.path, exc_info=exc)
+    return error_response("An unexpected error occurred. Please try again.", 500)
 
 
 def create_session_jwt(*, discord_access_token: str, discord_refresh_token: str, email: str) -> str:
@@ -195,20 +205,27 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
     parsed_url = parsed_url._replace(netloc=host)
     cleaned_url = urlunparse(parsed_url)
 
-    if host == "imdb.com":
-        movie_data = fetch_imdb(cleaned_url)
-    elif host == "letterboxd.com":
-        movie_data = fetch_letterboxd(cleaned_url)
-    elif host == "boxd.it":
-        movie_data = fetch_boxd(cleaned_url)
-    else:
-        logger.error("Invalid movie site")
-        return {"error": "URL must be from IMDb or Letterboxd"}
+    try:
+        if host == "imdb.com":
+            movie_data = fetch_imdb(cleaned_url)
+        elif host == "letterboxd.com":
+            movie_data = fetch_letterboxd(cleaned_url)
+        elif host == "boxd.it":
+            movie_data = fetch_boxd(cleaned_url)
+        else:
+            logger.error("Invalid movie site")
+            return error_response("URL must be from IMDb, Letterboxd, or Boxd.it", 400)
+    except MovieFetchError as e:
+        logger.warning(f"Movie fetch failed: {e}")
+        return error_response(str(e), e.status_code)
+    except Exception as e:
+        logger.error(f"Failed while fetching movie data: {e}")
+        return error_response("Failed to fetch movie data", 502)
 
     logger.info(f"Fetched movie data: {movie_data}")
     if not movie_data:
         logger.error("Failed to fetch movie data")
-        return {"error": "Failed to fetch movie data"}
+        return error_response("Failed to fetch movie data", 422)
 
     if session_token:
         try:
@@ -223,9 +240,12 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
 
     try:
         _add_movie(movie_data)
+    except ValueError as e:
+        logger.warning(f"Could not add movie: {e}")
+        return error_response(str(e), 409)
     except Exception as e:
         logger.error(f"Error adding movie: {e}")
-        return {"error": "Failed to add movie"}
+        return error_response("Failed to add movie", 500)
 
     await broadcast_event("movie_added", {"movie_id": movie_data.get("id")})
     return {"message": "Movie added successfully"}

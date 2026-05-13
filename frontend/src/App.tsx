@@ -9,6 +9,7 @@ import { AddMovieModal } from "@/components/AddMovieModal";
 import { SearchInput } from "@/components/SearchInput";
 import { UserFilter, UserFilterValue } from "@/components/UserFilter";
 import { NSFWFilter, NSFWFilterValue } from "@/components/NSFWFilter";
+import { ErrorAlert } from "@/components/ErrorAlert";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useMovieEvents } from "@/hooks/useMovieEvents";
 import movieStore, { fetchMovies } from "@/hooks/movieStore";
@@ -121,6 +122,7 @@ const App = () => {
 
   return (
     <>
+      <ErrorAlert />
       <Header />
       <main>
         <Login
@@ -161,29 +163,23 @@ const App = () => {
           <p class="empty-message">Loading movies...</p>
         </Show>
 
-        <Show when={movieStore.error}>
-          <p class="empty-message">{movieStore.error}</p>
+        <Show when={showWatched()}>
+          <MovieSection
+            title="Watched"
+            movies={watchedMovies}
+            viewType={viewType()}
+            onAction={fetchMovies}
+            itemsPerPage={maxItemsPerPage}
+          />
         </Show>
-
-        <Show when={!movieStore.error}>
-          <Show when={showWatched()}>
-            <MovieSection
-              title="Watched"
-              movies={watchedMovies}
-              viewType={viewType()}
-              onAction={fetchMovies}
-              itemsPerPage={maxItemsPerPage}
-            />
-          </Show>
-          <Show when={showUpcoming()}>
-            <MovieSection
-              title="Upcoming"
-              movies={upcomingMovies}
-              viewType={viewType()}
-              onAction={fetchMovies}
-              itemsPerPage={maxItemsPerPage}
-            />
-          </Show>
+        <Show when={showUpcoming()}>
+          <MovieSection
+            title="Upcoming"
+            movies={upcomingMovies}
+            viewType={viewType()}
+            onAction={fetchMovies}
+            itemsPerPage={maxItemsPerPage}
+          />
         </Show>
 
         <Show when={!!authStore.user}>

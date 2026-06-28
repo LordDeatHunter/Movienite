@@ -21,7 +21,7 @@ from data import NewUser
 from database.db import add_movie as _add_movie, get_movies, add_user, get_user_by_mail
 from database.db import get_movie_by_id, delete_movie, toggle_movie_watched, toggle_movie_boobies
 from discord_oauth import get_oauth_url, get_access_token, get_discord_user
-from movienite import MovieFetchError, fetch_imdb, fetch_letterboxd, fetch_boxd
+from movienite import MovieFetchError, fetch_tmdb
 
 load_dotenv()
 
@@ -31,7 +31,7 @@ JWT_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
 logger = logging.getLogger("uvicorn.error")
 
-VALID_MOVIE_SITES = ['imdb.com', 'letterboxd.com', 'boxd.it']
+VALID_MOVIE_SITES = ['themoviedb.org', 'tmdb.org']
 
 sse_clients: set[asyncio.Queue] = set()
 
@@ -206,15 +206,11 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
     cleaned_url = urlunparse(parsed_url)
 
     try:
-        if host == "imdb.com":
-            movie_data = fetch_imdb(cleaned_url)
-        elif host == "letterboxd.com":
-            movie_data = fetch_letterboxd(cleaned_url)
-        elif host == "boxd.it":
-            movie_data = fetch_boxd(cleaned_url)
+        if host in VALID_MOVIE_SITES:
+            movie_data = fetch_tmdb(cleaned_url)
         else:
             logger.error("Invalid movie site")
-            return error_response("URL must be from IMDb, Letterboxd, or Boxd.it", 400)
+            return error_response("URL must be from TMDB (themoviedb.org)", 400)
     except MovieFetchError as e:
         logger.warning(f"Movie fetch failed: {e}")
         return error_response(str(e), e.status_code)

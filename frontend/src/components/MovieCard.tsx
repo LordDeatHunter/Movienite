@@ -36,7 +36,8 @@ const MovieCard: Component<MovieCardProps> = (props) => {
       await api.discardMovie(props.movie.id);
       props.onAction?.();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to discard movie";
+      const message =
+        err instanceof Error ? err.message : "Failed to discard movie";
       showErrorAlert(message);
     } finally {
       setActionLoading(false);
@@ -49,7 +50,8 @@ const MovieCard: Component<MovieCardProps> = (props) => {
       await api.toggleBoobies(props.movie.id);
       props.onAction?.();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to toggle boobies";
+      const message =
+        err instanceof Error ? err.message : "Failed to toggle boobies";
       showErrorAlert(message);
     } finally {
       setActionLoading(false);
@@ -103,13 +105,22 @@ const MovieCard: Component<MovieCardProps> = (props) => {
         </Show>
         <p>{props.movie.description}</p>
         <div class="movie-links">
+          <Show when={props.movie.tmdb_url}>
+            <a href={props.movie.tmdb_url} target="_blank" rel="noreferrer">
+              TMDB
+            </a>
+          </Show>
           <Show when={props.movie.letterboxd_url}>
-            <a href={props.movie.letterboxd_url} target="_blank">
+            <a
+              href={props.movie.letterboxd_url}
+              target="_blank"
+              rel="noreferrer"
+            >
               Letterboxd
             </a>
           </Show>
           <Show when={props.movie.imdb_url}>
-            <a href={props.movie.imdb_url} target="_blank">
+            <a href={props.movie.imdb_url} target="_blank" rel="noreferrer">
               IMDb
             </a>
           </Show>

@@ -16,7 +16,8 @@ let hideTimer: number | undefined;
 let clearTimer: number | undefined;
 
 export const showErrorAlert = (message: string) => {
-  const normalizedMessage = message?.trim() || "Something went wrong. Please try again.";
+  const normalizedMessage =
+    message?.trim() || "Something went wrong. Please try again.";
 
   if (hideTimer) {
     window.clearTimeout(hideTimer);

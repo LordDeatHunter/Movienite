@@ -1,4 +1,6 @@
+import os
 import re
+from email import header
 from urllib.parse import quote_plus
 
 import requests
@@ -11,12 +13,72 @@ class MovieFetchError(Exception):
         self.status_code = status_code
 
 FETCH_HEADER = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     "Accept-Language": "en-US,en;q=0.9"
 }
 
+
+def fetch_tmdb(url: str) -> dict:
+    tmdb_id_match = re.search(r"/movie/(\d+)", url)
+    if not tmdb_id_match:
+        raise MovieFetchError("Invalid TMDB URL. Expected a /movie/{id} link.", 400)
+
+    tmdb_id = tmdb_id_match.group(1)
+    tmdb_api_key = os.getenv("TMDB_API_KEY")
+    if not tmdb_api_key:
+        raise MovieFetchError("TMDB API key is not configured on the server", 500)
+
+    try:
+        response = requests.get(
+            f"https://api.themoviedb.org/3/movie/{tmdb_id}",
+            params={"append_to_response": "external_ids"},
+            headers={"Authorization": f"Bearer {tmdb_api_key}"},
+            timeout=10,
+        )
+        if response.status_code == 404:
+            raise MovieFetchError("TMDB movie not found", 404)
+        response.raise_for_status()
+        movie = response.json()
+    except MovieFetchError:
+        raise
+    except requests.RequestException:
+        raise MovieFetchError("Failed to fetch TMDB movie", 502)
+    except ValueError:
+        raise MovieFetchError("TMDB returned invalid response", 502)
+
+    title = (movie.get("title") or "").strip()
+    if not title:
+        raise MovieFetchError("Could not parse movie title from TMDB", 422)
+
+    poster_path = movie.get("poster_path")
+    image_link = f"https://image.tmdb.org/t/p/w500{poster_path}" if poster_path else ""
+
+    vote_average = movie.get("vote_average")
+    rating = f"{float(vote_average):.1f}" if isinstance(vote_average, (int, float)) else ""
+    vote_count = movie.get("vote_count")
+    votes = str(vote_count) if isinstance(vote_count, int) and vote_count > 0 else ""
+
+    imdb_id = (movie.get("external_ids") or {}).get("imdb_id")
+    imdb_url = f"https://www.imdb.com/title/{imdb_id}/" if imdb_id else ""
+
+    return {
+        "id": f"tmdb_{tmdb_id}",
+        "title": title,
+        "original_title": (movie.get("original_title") or "").strip(),
+        "description": (movie.get("overview") or "").strip(),
+        "tmdb_url": f"https://www.themoviedb.org/movie/{tmdb_id}",
+        "letterboxd_url": "",
+        "imdb_url": imdb_url,
+        "image_link": image_link,
+        "rating": rating,
+        "votes": votes,
+        "boobies": False,
+        "watched": False,
+    }
+
 def fetch_imdb(url: str) -> dict:
+    """Deprecated: use fetch_tmdb instead."""
     imdb_id_match = re.search(r"/title/(tt\d+)/", url)
     if not imdb_id_match:
         raise MovieFetchError("Invalid IMDb URL", 400)
@@ -30,7 +92,6 @@ def fetch_imdb(url: str) -> dict:
         raise MovieFetchError("Failed to fetch IMDb page", 502)
 
     soup = BeautifulSoup(response.text, 'html.parser')
-    print(soup)
     title_node = soup.find('span', class_='hero__primary-text')
     if not title_node:
         raise MovieFetchError("Could not find movie title from IMDb", 422)
@@ -84,6 +145,7 @@ def fetch_imdb(url: str) -> dict:
     }
 
 def fetch_letterboxd_url_by_imdb_id(imdb_id: str) -> str | None:
+    """Deprecated helper retained for legacy compatibility."""
     url = f"https://letterboxd.com/imdb/{imdb_id}/"
     try:
         response = requests.get(url, headers=FETCH_HEADER, allow_redirects=True, timeout=10)
@@ -95,7 +157,7 @@ def fetch_letterboxd_url_by_imdb_id(imdb_id: str) -> str | None:
     return ""
 
 def fetch_letterboxd(url: str) -> dict:
-    """Resolve a Letterboxd URL to an IMDb title by searching IMDb.
+    """Deprecated: resolve a Letterboxd URL via IMDb search.
 
     Letterboxd often blocks server-side scraping (403/Cloudflare). Instead of
     requesting Letterboxd, extract the movie slug from the URL and search IMDb.
@@ -133,6 +195,7 @@ def fetch_letterboxd(url: str) -> dict:
 
 
 def fetch_boxd(url: str) -> dict:
+    """Deprecated: use fetch_tmdb instead."""
     try:
         response = requests.get(url, allow_redirects=True, timeout=10)
         response.raise_for_status()

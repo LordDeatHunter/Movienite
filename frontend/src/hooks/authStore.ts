@@ -57,7 +57,8 @@ export const login = async () => {
     window.location.href = url;
   } catch (err) {
     console.error("Failed to get login URL:", err);
-    const message = err instanceof Error ? err.message : "Failed to initiate login";
+    const message =
+      err instanceof Error ? err.message : "Failed to initiate login";
     setError(message);
     showErrorAlert(message);
   }

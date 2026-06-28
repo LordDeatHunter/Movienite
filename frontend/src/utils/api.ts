@@ -3,6 +3,9 @@ import type { Movie } from "@/types";
 
 const GENERIC_REQUEST_ERROR = "Something went wrong. Please try again.";
 
+type FetchInput = Parameters<typeof fetch>[0];
+type FetchInit = Parameters<typeof fetch>[1];
+
 type FastApiValidationError = {
   msg?: unknown;
 };
@@ -58,8 +61,8 @@ const extractErrorMessage = async (
 };
 
 const requestJson = async <T>(
-  input: RequestInfo | URL,
-  init: RequestInit,
+  input: FetchInput,
+  init: FetchInit,
   fallbackMessage: string,
 ): Promise<T> => {
   let response: Response;
@@ -88,7 +91,11 @@ export const api = {
   },
 
   async getUser() {
-    return requestJson<User>(`/api/user`, { method: "GET" }, "Failed to get user");
+    return requestJson<User>(
+      `/api/user`,
+      { method: "GET" },
+      "Failed to get user",
+    );
   },
 
   async logout() {

@@ -4,6 +4,7 @@ export interface Movie {
   original_title?: string;
   description?: string;
   image_link?: string;
+  tmdb_url?: string;
   letterboxd_url?: string;
   imdb_url?: string;
   rating?: string;

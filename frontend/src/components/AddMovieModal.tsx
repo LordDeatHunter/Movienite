@@ -76,7 +76,17 @@ export const AddMovieModal: Component<AddMovieModalProps> = (props) => {
           </span>
           <h2>Add a Movie</h2>
           <form onSubmit={handleSubmit} autocomplete="off">
-            <label for="movie-url">Enter IMDb or Letterboxd URL:</label>
+            <label for="movie-url">
+              Enter a TMDB movie URL (find one on{" "}
+              <a
+                href="https://www.themoviedb.org/movie"
+                target="_blank"
+                rel="noreferrer"
+              >
+                TMDB
+              </a>
+              ):
+            </label>
             <input
               type="url"
               id="movie-url"

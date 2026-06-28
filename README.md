@@ -8,6 +8,8 @@ Made to be used for organizing movie nights for specific discord servers.
 
 ## Setup
 
+Copy `.env.example` into `.env` and change the values.
+
 ### Docker
 
 **Development:**

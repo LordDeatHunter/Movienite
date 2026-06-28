@@ -30,6 +30,7 @@ def row_to_movie_dict(row: dict) -> dict:
         'title': row.get('title') or '',
         'original_title': row.get('original_title') or '',
         'description': row.get('description') or '',
+        'tmdb_url': row.get('tmdb_url') or '',
         'letterboxd_url': row.get('letterboxd_url') or '',
         'imdb_url': row.get('imdb_url') or '',
         'boobies': bool(row.get('boobies', False)),
@@ -64,6 +65,7 @@ def get_movies() -> dict:
                        m.title,
                        m.original_title,
                        m.description,
+                       m.tmdb_url,
                        m.letterboxd_url,
                        m.imdb_url,
                        m.boobies,
@@ -111,15 +113,16 @@ def add_movie(movie: dict) -> None:
 
             cur.execute(
                 """
-                INSERT INTO movies (id, title, original_title, description, letterboxd_url, imdb_url, boobies, watched,
-                                    image_link, rating, votes, user_id)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO movies (id, title, original_title, description, tmdb_url, letterboxd_url, imdb_url, boobies,
+                                    watched, image_link, rating, votes, user_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                 (
                     movie_id,
                     movie.get('title'),
                     movie.get('original_title'),
                     movie.get('description'),
+                    movie.get('tmdb_url'),
                     movie.get('letterboxd_url'),
                     movie.get('imdb_url'),
                     boobies,
@@ -155,12 +158,13 @@ def save_movies(data: dict) -> None:
 
                 cur.execute(
                     """
-                    INSERT INTO movies (id, title, original_title, description, letterboxd_url, imdb_url, boobies,
-                                        watched, image_link, rating, votes, user_id)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    INSERT INTO movies (id, title, original_title, description, tmdb_url, letterboxd_url, imdb_url,
+                                        boobies, watched, image_link, rating, votes, user_id)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (id) DO UPDATE SET title          = EXCLUDED.title,
                                                    original_title = EXCLUDED.original_title,
                                                    description    = EXCLUDED.description,
+                                                   tmdb_url       = EXCLUDED.tmdb_url,
                                                    letterboxd_url = EXCLUDED.letterboxd_url,
                                                    imdb_url       = EXCLUDED.imdb_url,
                                                    boobies        = EXCLUDED.boobies,
@@ -175,6 +179,7 @@ def save_movies(data: dict) -> None:
                         movie.get('title'),
                         movie.get('original_title'),
                         movie.get('description'),
+                        movie.get('tmdb_url'),
                         movie.get('letterboxd_url'),
                         movie.get('imdb_url'),
                         boobies,

@@ -6,7 +6,9 @@
   opacity: 0;
   transform: translateY(-6px);
   pointer-events: none;
-  transition: opacity 250ms ease, transform 250ms ease;
+  transition:
+    opacity 250ms ease,
+    transform 250ms ease;
 }
 
 .error-alert-visible {

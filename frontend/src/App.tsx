@@ -2,7 +2,7 @@ import { createMemo, createSignal, Show } from "solid-js";
 import MovieSection from "@/components/MovieSection";
 import { Login } from "@/components/Login";
 import { Header } from "@/components/Header";
-import { CategoryButtons } from "@/components/CategoryButtons";
+import { CategoryButtons, MovieTab } from "@/components/CategoryButtons";
 import { ViewToggle } from "@/components/ViewToggle";
 import { AddMovieButton } from "@/components/AddMovieButton";
 import { AddMovieModal } from "@/components/AddMovieModal";
@@ -20,8 +20,6 @@ import { makeComparator, SortField } from "@/utils/sort";
 const App = () => {
   useMovieEvents();
 
-  const [showWatched, setShowWatched] = createSignal(true);
-  const [showUpcoming, setShowUpcoming] = createSignal(true);
   const [modalOpen, setModalOpen] = createSignal(false);
   const [searchQuery, setSearchQuery] = createSignal("");
   const [userFilter, setUserFilter] = createSignal<UserFilterValue>({
@@ -35,6 +33,9 @@ const App = () => {
   const { value: viewType, setValue: setViewType } = useLocalStorage<
     "list" | "grid"
   >("view-type", "list");
+
+  const { value: activeTab, setValue: setActiveTab } =
+    useLocalStorage<MovieTab>("active-tab", "upcoming");
 
   const { value: sortField, setValue: setSortField } =
     useLocalStorage<SortField>("sort-field", SortField.Date);
@@ -106,8 +107,6 @@ const App = () => {
     return arr;
   });
 
-  const handleWatchedToggle = () => setShowWatched((v) => !v);
-  const handleUpcomingToggle = () => setShowUpcoming((v) => !v);
   const handleViewToggle = () => {
     setViewType(viewType() === "grid" ? "list" : "grid");
   };
@@ -133,12 +132,7 @@ const App = () => {
         />
 
         <div class="categories">
-          <CategoryButtons
-            showWatched={showWatched}
-            showUpcoming={showUpcoming}
-            onWatchedToggle={handleWatchedToggle}
-            onUpcomingToggle={handleUpcomingToggle}
-          />
+          <CategoryButtons activeTab={activeTab} onTabChange={setActiveTab} />
           <ViewToggle viewType={viewType} onToggle={handleViewToggle} />
         </div>
         <div class="search-filters">
@@ -163,16 +157,18 @@ const App = () => {
           <p class="empty-message">Loading movies...</p>
         </Show>
 
-        <Show when={showWatched()}>
-          <MovieSection
-            title="Watched"
-            movies={watchedMovies}
-            viewType={viewType()}
-            onAction={fetchMovies}
-            itemsPerPage={maxItemsPerPage}
-          />
-        </Show>
-        <Show when={showUpcoming()}>
+        <Show
+          when={activeTab() === "upcoming"}
+          fallback={
+            <MovieSection
+              title="Watched"
+              movies={watchedMovies}
+              viewType={viewType()}
+              onAction={fetchMovies}
+              itemsPerPage={maxItemsPerPage}
+            />
+          }
+        >
           <MovieSection
             title="Upcoming"
             movies={upcomingMovies}

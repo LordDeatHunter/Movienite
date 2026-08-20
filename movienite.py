@@ -23,7 +23,6 @@ def fetch_tmdb(url: str, tmdb_api_key: str) -> dict:
         raise MovieFetchError("Invalid TMDB URL. Expected a /movie/{id} link.", 400)
 
     tmdb_id = tmdb_id_match.group(1)
-    tmdb_api_key = tmdb_api_key
     if not tmdb_api_key:
         raise MovieFetchError("TMDB API key is not configured on the server", 500)
 

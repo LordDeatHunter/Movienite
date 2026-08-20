@@ -1,6 +1,4 @@
-import os
 import re
-from email import header
 from urllib.parse import quote_plus
 
 import requests
@@ -19,13 +17,13 @@ FETCH_HEADER = {
 }
 
 
-def fetch_tmdb(url: str) -> dict:
+def fetch_tmdb(url: str, tmdb_api_key: str) -> dict:
     tmdb_id_match = re.search(r"/movie/(\d+)", url)
     if not tmdb_id_match:
         raise MovieFetchError("Invalid TMDB URL. Expected a /movie/{id} link.", 400)
 
     tmdb_id = tmdb_id_match.group(1)
-    tmdb_api_key = os.getenv("TMDB_API_KEY")
+    tmdb_api_key = tmdb_api_key
     if not tmdb_api_key:
         raise MovieFetchError("TMDB API key is not configured on the server", 500)
 

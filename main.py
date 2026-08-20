@@ -29,6 +29,8 @@ JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+
 logger = logging.getLogger("uvicorn.error")
 
 VALID_MOVIE_SITES = ['themoviedb.org', 'tmdb.org']
@@ -207,7 +209,7 @@ async def add_new_movie(request: AddMovieRequest, session_token: str | None = Co
 
     try:
         if host in VALID_MOVIE_SITES:
-            movie_data = fetch_tmdb(cleaned_url)
+            movie_data = fetch_tmdb(cleaned_url, TMDB_API_KEY)
         else:
             logger.error("Invalid movie site")
             return error_response("URL must be from TMDB (themoviedb.org)", 400)
